@@ -1,5 +1,5 @@
 # Marvin V5
 
-This will be a cluster of vagrant virtualbox servers for developer testing.
+This will be a cluster of vagrant virtualbox servers.
 
-It's for learning and it's a work in progress will probably never be finished or usable to others.
+It's for learning, is a work in progress, will never be finished and probably isn't usable to others.
