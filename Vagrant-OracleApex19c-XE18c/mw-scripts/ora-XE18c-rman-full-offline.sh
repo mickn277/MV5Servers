@@ -17,7 +17,7 @@ export ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
 
 LD_LIBRARY_PATH=$ORACLE_HOME/lib; export LD_LIBRARY_PATH
 PATH=$PATH:$ORACLE_HOME/bin; export PATH
-EMAILTO=mickawells70@gmail.com
+EMAILTO=#EMAILTO#
 BACKUPDIR=/vagrant/backup
 
 export PATH=$PATH:$ORACLE_HOME/bin
