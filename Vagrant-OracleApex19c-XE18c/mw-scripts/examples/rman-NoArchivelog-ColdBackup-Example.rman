@@ -1,0 +1,55 @@
+#NOTE: 10.2.0.3 has to use catalog10g (10.2.0.3)
+#NOTE: This is a COLD BACKUP using RMAN
+
+export ORACLE_SID=MIGPROD
+rman target / catalog rman/rman@RMANGRID
+
+register database;
+configure retention policy to recovery window of 0 days;
+configure default device type to disk;
+configure channel device type disk MAXPIECESIZE = 8G;
+configure device type disk backup type to compressed backupset;
+configure controlfile autobackup on;
+configure controlfile autobackup format for device type disk to '/u04/oracle/backup/MIGPROD/%F';
+configure snapshot controlfile name to '/u04/oracle/backup/MIGPROD/snapcf_MIGPROD.f';
+configure backup optimization on;   
+resync catalog;
+exit;
+ 
+rman target / catalog rman/rman@RMANCATI
+
+create script df_bak_cold
+{shutdown immediate;
+startup mount;
+allocate channel t1 type disk format '/u04/oracle/backup/MIGPROD/%d_LVL0_s%s_p%p_c%c';
+backup database include current controlfile tag = 'MIGPROD_daily_cold';
+release channel t1;
+sql 'alter database open';
+}
+
+create script maintain_validate 
+{crosscheck backup; 
+restore tablespace SYSTEM validate; 
+report unrecoverable; 
+report obsolete; 
+report need backup days 1; 
+delete force noprompt expired backupset; 
+delete force noprompt obsolete; 
+resync catalog; 
+}
+
+create script maintain 
+{resync catalog; 
+crosscheck backup; 
+report unrecoverable; 
+report need backup days 1; 
+delete force noprompt expired backupset; 
+delete force noprompt obsolete; 
+}
+
+rman target / catalog rman/rman@RMANGRID
+run { execute script df_bak_cold; }
+run { execute script maintain; }
+
+print script maintain;
+
