@@ -1,0 +1,3 @@
+show retention policy;
+configure retention policy to redundancy 2;
+configure retention policy to recovery window of 7 days;

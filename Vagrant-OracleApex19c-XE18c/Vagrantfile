@@ -71,15 +71,15 @@ end
 
 # MW CUSTOM: Added tests for downloaded files ...
 unless !Dir.glob('./downloads/oracle-database-xe-18c*.rpm').empty?
-  puts 'downloaded database-preinstall not found'
+  puts 'downloaded database rpm not found'
   exit
 end
 unless !Dir.glob('./downloads/apex*.zip').empty?
-  puts 'downloaded apex not found'
+  puts 'downloaded apex zip not found'
   exit
 end
 unless !Dir.glob('./downloads/ords-*.zip').empty?
-  puts 'downloaded ords not found'
+  puts 'downloaded ords zip not found'
   exit
 end
 
@@ -148,7 +148,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "scripts/install.sh"
 
   # MW CUSTOM: Provision - extra installs and configs
-  config.vm.provision "shell", path: "mw-scripts/provision-os-installs-configs.sh"
+  config.vm.provision "shell", path: "mw-scripts/provision-redhat-installs-configs.sh"
 
   # Provision Oracle Database on the first run
   config.vm.provision "shell", path: "scripts/database.sh", env:
@@ -158,7 +158,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     }
   
   # MW CUSTOM: Provision - custom config:
-  config.vm.provision "shell", path: "mw-scripts/provision-redhat-installs-configs.sh"
+  config.vm.provision "shell", path: "mw-scripts/provision-database-xe18c-config.sh"
   
   # Provision Oracle Application Expresss on the first run
   config.vm.provision "shell", path: "scripts/apex.sh"

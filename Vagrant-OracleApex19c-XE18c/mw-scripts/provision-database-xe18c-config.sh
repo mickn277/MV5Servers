@@ -37,5 +37,6 @@ yum install -y rlwrap
 echo 'MW CUSTOM: Install rlwrap'
 
 echo '#MW CUSTOM: add rlwrap' >> /home/oracle/.bashrc
-echo 'alias sqlplus="rlwrap -i sqlplus"' >> /home/oracle/.bashrc
-echo 'MW CUSTOM: add alias sqlplus rlwrap'
+echo 'alias sqlplus="rlwrap -i $ORACLE_HOME/bin/sqlplus"' >> /home/oracle/.bashrc
+echo 'alias rman="rlwrap -i $ORACLE_HOME/bin/rman"' >> /home/oracle/.bashrc
+echo 'MW CUSTOM: add alias rlwrap for sqlplus rman '
