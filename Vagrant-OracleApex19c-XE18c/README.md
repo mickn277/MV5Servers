@@ -44,13 +44,13 @@ A vagrant box that provisions Oracle Database XE 18.4 with Oracle Application Ex
 * service_name: `XEPDB1`
 * Password: `#PASSWORD#`
 
-### EM Console https://10.1.1.11:5500/em default PDB
+### EM Console https://localhost:5500/em default PDB
 * Username: `sys`
 * Password: `#PASSWORD#`
 * Container Name: `XEPDB1`
 * as sysdba [checked]
 
-### EM Console https://10.1.1.11:5500/em default CDB 
+### EM Console https://localhost:5500/em default CDB 
 * Username: `sys`
 * Password: `#PASSWORD#`
 * Container Name: `CDB$ROOT`
@@ -81,6 +81,6 @@ Oracle Application Express Access will be available on the host OS by accessing 
 * `http://localhost:8080/ords/`
 * `Workspace: internal`
 * `User: admin`
-* `Password: <See auto-generated password>`
+* `Password: #PASSWORD# <See auto-generated password>`
 
 At the first login you'll be forced to change the default `admin` password.
