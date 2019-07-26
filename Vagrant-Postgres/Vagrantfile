@@ -1,0 +1,52 @@
+# --------------------------------------------------------------------------------
+#
+# --------------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------
+# Configuration: 
+# --------------------------------------------------------------------------------
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+NAME = "Vagrant-Postgres-Timescale"
+
+# MW CUSTOM: Define tests to determine if we are provisioned and or provisioning 
+def provisioned?(provider='virtualbox')
+    File.exists?(File.join(File.dirname(__FILE__),".vagrant/machines/#{NAME}/#{provider}/action_provision"))
+end
+def provisioning?()
+  (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
+end
+
+# --------------------------------------------------------------------------------
+# Provision:
+# --------------------------------------------------------------------------------
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.box = "centos/7"
+    #config.vm.box_url = ""
+    config.vm.define NAME
+
+    # MW CUSTOM: Must specify :id "ssh" so it's recognised as the vagrant ssh port
+    config.vm.network :forwarded_port, guest: 22, host: 30022, id: "ssh"
+
+    config.vm.provider :virtualbox do |v, override|
+        v.memory = 3072
+        v.cpus = 2
+        # MW CUSTOM: Prevent VirtualBox from interfering with host audio stack
+        v.customize ["modifyvm", :id, "--audio", "none"]
+        override.vm.box_download_checksum_type = "sha256"
+        override.vm.box_download_checksum = "b24c912b136d2aa9b7b94fc2689b2001c8d04280cf25983123e45b6a52693fb3"
+        override.vm.box_url = "https://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-x86_64-Vagrant-1803_01.VirtualBox.box"
+    end
+
+    # Database port forwarding
+    config.vm.network "forwarded_port", guest: 35432, host: 35432, id: "postgres"
+    
+    # Provision - Centos
+    config.vm.provision "shell", path: "scripts/installs-centos.sh"
+
+    # Provision - extra installs and configs
+    config.vm.provision "shell", path: "scripts/postgres-setup.sh"
+end

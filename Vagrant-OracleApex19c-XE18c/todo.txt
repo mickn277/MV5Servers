@@ -1,0 +1,6 @@
+https://easyoradba.com/2018/07/09/ssl-certificates-for-oracle-apex-18-1-with-oracle-rest-data-services-ords-18-1-hosted-on-apache-tomcat-9/
+
+
+Forcing HTTPS on ApEx 19c XE causes SSL_ERROR_RX_RECORD_TOO_LONG error
+
+https://www.thesslstore.com/blog/ssl_error_rx_record_too_long/

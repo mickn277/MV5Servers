@@ -1,0 +1,7 @@
+#MW:
+.vagrant
+*.rpm
+ords*.zip
+apex*.zip
+/downloads
+/backups

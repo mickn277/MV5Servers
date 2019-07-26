@@ -1,3 +1,30 @@
-show retention policy;
+# --------------------------------------------------------------------------------
+# Connect to rman
+# --------------------------------------------------------------------------------
+
+# BASH>
+sudo su - oracle
+cd /vagrant/backups/XE
+
+# Optional: copy initXE.ora to $ORACLE_HOME/dbs directory if it's not available or corrupt.
+
+$ORACLE_HOME/bin/rman target / nocatalog 
+-- RMAN>
+
+show all;
+
 configure retention policy to redundancy 2;
-configure retention policy to recovery window of 7 days;
+configure channel device type disk format '/vagrant/backups/XE/%U' MAXPIECESIZE 10000M maxopenfiles 16;
+
+-- View the backups
+list backup;
+list backup summary;
+
+list expired archivelog all;
+report obsolete device type disk;
+
+-- Perform a block level check of the database (slow):
+backup validate check logical database;
+
+-- Recover corrupt blocks if possible:
+blockrecover corruption list;

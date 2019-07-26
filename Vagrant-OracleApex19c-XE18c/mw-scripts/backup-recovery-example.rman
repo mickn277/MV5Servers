@@ -1,0 +1,47 @@
+# --------------------------------------------------------------------------------
+# Connect to rman
+# --------------------------------------------------------------------------------
+
+# BASH>
+sudo su - oracle
+cd /vagrant/backups/XE
+
+# Optional: copy initXE.ora to $ORACLE_HOME/dbs directory if it's not available or corrupt.
+
+$ORACLE_HOME/bin/rman target / nocatalog 
+-- RMAN>
+
+
+# --------------------------------------------------------------------------------
+# Perform recovery
+# --------------------------------------------------------------------------------
+-- Optional: if Oracle is running:
+shutdown immediate;
+
+startup mount;
+
+-- Optional: catalog the backups.
+catalog start with '/vagrant/backups/XE';
+
+-- Show the backups we have available:
+list backup summary;
+list backup;
+
+RESTORE DATABASE FROM TAG "BACKUP_XE_DB";
+
+-- Recovery when redo logs are available:
+RECOVER DATABASE;
+
+-- Optional: recovery:
+recover datafile '/opt/oracle/oradata/XE/system01.dbf';
+
+-- Open the database:
+ALTER DATABASE OPEN RESETLOGS;
+-- Optional: if above fails:
+ALTER DATABASE OPEN;
+
+quit;
+
+
+
+

@@ -48,17 +48,20 @@ RUN {
 shutdown immediate;
 startup mount;
 
-allocate channel c1 device type disk format '/vagrant/backups/XE/%U' MAXPIECESIZE 10000 M MAXOPENFILES 16;
+allocate channel c1 device type disk format '/vagrant/backups/XE/%U' MAXPIECESIZE 10000M MAXOPENFILES 16;
 
-backup database tag "Backup_XE_DB";
-backup spfile current controlfile tag "Backup_XE_SP_CF";
+backup as compressed backupset database tag "BACKUP_XE_DB";
+backup spfile current controlfile tag "BACKUP_XE_SP_CF";
 sql "create pfile=''/vagrant/backups/XE/initXE.ora'' from spfile";
 
+backup as compressed backupset archivelog all not backed up 2 times tag "BACKUP_XE_AL";
 alter database open;
 
 delete noprompt obsolete;
 
 restore database validate;
+
+list backup summary;
 }
 quit;
 EOF
