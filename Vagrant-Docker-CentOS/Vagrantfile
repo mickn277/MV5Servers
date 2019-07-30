@@ -20,8 +20,8 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define NAME
   config.vm.box = "centos/7"
-
-  config.vm.network :forwarded_port, guest: 22, host: 2322, id: "ssh"
+  config.vm.hostname = NAME # VM hostname
+  config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
@@ -33,7 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #USB, Serial disabled by default
   end
 
-  # add proxy configuration from host env - optional
+  # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
     if ENV["http_proxy"]
@@ -49,10 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # VM hostname
-  config.vm.hostname = NAME
-
-  #SecFix: Don't map the root of vagrant as the path leads to the private keys etc.
+  # SecFix: Don't map the root of vagrant as the path leads to the private keys etc.
   if provisioned?
     config.vm.synced_folder ".", "/vagrant", disabled: true
   end

@@ -1,0 +1,38 @@
+PS>
+docker-machine env --shell powershell Docker-Machine-Default
+docker-machine env Docker-Machine-Default | Invoke-Expression
+
+GITBASH>
+
+docker exec -it Docker-Machine-Default /bin/bash
+
+docker pull nginx
+
+docker run --name nginx-apex-revproxy -v /D/datagroup/oberonst/builds/MarvinV5/Docker/tmp/nginx-apex-test.conf:/etc/nginx/nginx.conf:ro -d nginx
+docker run --name nginx-apex-revproxy -v D:/datagroup/oberonst/builds/MarvinV5/Docker/tmp/nginx-apex-test.conf:/etc/nginx/nginx.conf:ro -d nginx
+
+docker run --name nginx-apex-revproxy -v ${PWD}/tmp/nginx-apex-test.conf:/etc/nginx/nginx.conf:ro -d nginx
+
+docker run -d `
+  --name devtest `
+  --mount source=${PWD}\tmp\nginx-apex-test.conf,target=/etc/nginx/nginx.conf `
+  nginx:latest
+
+#Cleanup
+docker rm nginx-apex-revproxy
+
+${PWD}/upload:/var/www/html/upload
+
+TODO: 
+Add https and ssl self signed certificate:
+
+https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/
+
+C:\Program Files\Docker\Docker\Resources\bin\docker.exe: 
+Error response from daemon: 
+OCI runtime create failed: 
+container_linux.go:345: starting container process caused "process_linux.go:430: 
+container init caused \"rootfs_linux.go:58: 
+mounting \\\"/D/datagroup/oberonst/builds/MarvinV5/Docker/tmp/nginx-apex-test.conf\\\" to rootfs \\\"/mnt/sda1/var/lib/docker/overlay2/871054633b57a940b1ea10054ac8122b5d082528405b271c3a80ad9a9206df2a/merged\\\" at \\\"/mnt/sda1/var/lib/docker/overlay2/871054633b57a940b1ea10054ac8122b5d082528405b271c3a80ad9a9206df2a/merged/etc/nginx/nginx.conf\\\" caused \\\"not a directory\\\"\"": 
+unknown: Are you trying to mount a directory onto a file (or vice-versa)? 
+Check if the specified host path exists and is the expected type.
