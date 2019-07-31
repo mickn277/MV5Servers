@@ -30,7 +30,7 @@ enable-user-namespaces () {
 
   echo "INFO: Copy Docker's daemon.json which enables User Namespaces"
   # TODO: What if daemon.json already exists?
-  cp -v /vagrant/daemon.json /etc/docker/daemon.json
+  cp -v /vagrant/provision-scripts/daemon.json /etc/docker/daemon.json
 }
 
 enable-user-namespaces

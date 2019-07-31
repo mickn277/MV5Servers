@@ -6,8 +6,7 @@ as closely as practical.
 
 Installs CentOS, Docker CE and tests the finished image with `docker run hello-world`.
 
-Supports Docker CE Stable, Edge [Deprecated in July 2018](https://docs.docker.com/edge/)
-and Test. See `install-docker.sh` for details.
+Supports [Docker CE](https://docs.docker.com/install/) Stable and Test. See `install-docker.sh` for details.
 
 # Usage
 
@@ -15,15 +14,15 @@ Simply clone this repo, and run `vagrant up`:
 
 ```
 $ vagrant up
-Bringing machine 'default' up with 'virtualbox' provider...
-==> default: Importing base box 'centos/7'...
+Bringing machine 'vagrant-centos-docker' up with 'virtualbox' provider...
+==> vagrant-centos-docker: Importing base box 'centos/7'...
 ...
-==> default: + sudo docker run hello-world
+==> vagrant-centos-docker: + sudo docker run hello-world
 ...
-==> default: Status: Downloaded newer image for hello-world:latest
-==> default: 
-==> default: Hello from Docker!
-==> default: This message shows that your installation appears to be working correctly.
+==> vagrant-centos-docker: Status: Downloaded newer image for hello-world:latest
+==> vagrant-centos-docker: 
+==> vagrant-centos-docker: Hello from Docker!
+==> vagrant-centos-docker: This message shows that your installation appears to be working correctly.
 ...
 ```
 

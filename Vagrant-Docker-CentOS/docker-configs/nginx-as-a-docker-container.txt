@@ -1,10 +1,12 @@
 PS>
-docker-machine env --shell powershell Docker-Machine-Default
-docker-machine env Docker-Machine-Default | Invoke-Expression
+# List availabl docker machines
+docker-machine ls
+docker-machine env --shell powershell Vagrant-Docker-CentOS7
+docker-machine env Vagrant-Docker-CentOS7 | Invoke-Expression
 
 GITBASH>
 
-docker exec -it Docker-Machine-Default /bin/bash
+docker exec -it Vagrant-Docker-CentOS7 /bin/bash
 
 docker pull nginx
 

@@ -1,6 +1,10 @@
 # --------------------------------------------------------------------------------
-#
+# 
 # --------------------------------------------------------------------------------
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -15,7 +19,7 @@ def provisioning?()
   (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
 end
 
-#TODO: any custom provisioning tests here
+# TODO: any custom provisioning tests here
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define NAME
@@ -26,11 +30,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
     v.cpus = 1
-    #BugFix: Name required here also
+    # BugFix: Name required here also
     v.name = NAME
-    #Prevent VirtualBox from interfering with host audio stack
+    # Prevent VirtualBox from interfering with host audio stack
     v.customize ["modifyvm", :id, "--audio", "none"]
-    #USB, Serial disabled by default
+    # USB, Serial disabled by default
   end
 
   # Proxy configuration from host env - optional
@@ -49,15 +53,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # SecFix: Don't map the root of vagrant as the path leads to the private keys etc.
+  # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?
     config.vm.synced_folder ".", "/vagrant", disabled: true
   end
-  config.vm.synced_folder "docker-configs/", "/var/docker-configs"
+  config.vm.synced_folder "docker-configs/", "/mnt/docker-configs"
 
-  #Provision
+  # Provision
   config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
   config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
 end
-# -*- mode: ruby -*-
-# vi: set ft=ruby :

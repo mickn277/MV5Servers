@@ -8,15 +8,11 @@ set -x # Print commands for troubleshooting
 
 # 1. Install required packages.
 
-sudo yum install --assumeyes --quiet yum-utils \
-  device-mapper-persistent-data \
-  lvm2
+sudo yum install --assumeyes --quiet yum-utils device-mapper-persistent-data lvm2
 
 # 2. Use the following command to set up the stable repository. You always need the stable repository, even if you want to install builds from the edge or test repositories as well.
 
-sudo yum-config-manager --quiet \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum-config-manager --quiet --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 # 3. Optional: Enable the edge and test repositories.
 
