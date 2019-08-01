@@ -1,2 +1,0 @@
-# Current Linux Release:
-cat /etc/*-release | grep release | head -1
