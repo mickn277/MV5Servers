@@ -1,7 +1,7 @@
-#MW:
-.vagrant
-*.rpm
-ords*.zip
-apex*.zip
-/downloads
-/backups
+#Ignore 
+#/.vagrant/
+#/downloads/*
+#*.rpm
+#ords*.zip
+#apex*.zip
+#/backups/*
