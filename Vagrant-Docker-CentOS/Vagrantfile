@@ -57,7 +57,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if provisioned?
     config.vm.synced_folder ".", "/vagrant", disabled: true
   end
-  config.vm.synced_folder "docker-configs/", "/mnt/docker-configs"
+  config.vm.synced_folder "docker-scripts/", "/docker-scripts"
 
   # Provision
   config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
