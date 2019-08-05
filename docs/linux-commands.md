@@ -11,7 +11,7 @@ cat /etc/*-release | grep release | head -1
 
 ## Install and patch
 
-### Install from custom repo
+### Example Install from custom repo
 ```bash
 # Install repo
 sudo yum-config-manager --quiet --add-repo https://download.docker.com/linux/centos/docker-ce.repo
