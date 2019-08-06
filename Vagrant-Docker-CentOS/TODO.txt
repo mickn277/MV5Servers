@@ -1,0 +1,33 @@
+Guest additions not installed in CentOS7 base box.
+
+
+
+                # BugFix: CentOS 7 box doesn't not have GuestAdditions, but it should have:
+                #if provisioning?
+                #v.customize ["storageattach", :id, "--medium", "additions", "--storagectl", "IDE", "--port", "1", "--device", "1", "--type", "dvddrive"]
+                #v.customize ["guestcontrol ", :id, "updateguestadditions", "--source", "/usr/share/virtualbox/VBoxGuestAdditions.iso", "--verbose"]
+                #end updateguestadditions
+
+#config.vm.provision :shell, inline: "sudo mount /dev/cdrom /media/cdrom"
+    #Install the necessary dependencies
+    #sudo yum install -y dkms build-essential linux-headers-generic linux-headers-$(uname -r)
+  
+  #Install the Guest Additions package
+  #config.vm.provision :shell, inline: "sudo sh /media/cdrom/VBoxLinuxAdditions.run"
+    
+
+    Vagrant-Docker-CentOS7: + sudo usermod -a -G docker vagrant
+==> Vagrant-Docker-CentOS7: Configuring proxy for Docker...
+The following SSH command responded with a non-zero exit status.
+Vagrant assumes that this means the command failed!
+
+chmod 0644 /etc/systemd/system/docker.service.d/http-proxy.conf
+
+Stdout from the command:
+
+
+
+Stderr from the command:
+
+chmod: cannot access ‘/etc/systemd/system/docker.service.d/http-proxy.conf’: No such file or directory
+PS D:\datagroup\oberonst\builds\MarvinV5\Vagrant-Docker-CentOS>

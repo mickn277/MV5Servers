@@ -23,9 +23,13 @@ end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define NAME
-  config.vm.box = "centos/7"
+  #BugFix: "centos/7" does't have GuestAdditions installed, which causes no end of grief.  5 Million people with this issue!
+  #config.vm.box = "centos/7"
+  config.vm.box = "generic/centos7"
   config.vm.hostname = NAME # VM hostname
   config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
+  
+  config.vm.box_check_update = false
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
@@ -36,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--audio", "none"]
     # USB, Serial disabled by default
   end
-
+  
   # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
@@ -53,13 +57,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  # Provision
+  config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
+  config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
+
+  config.vm.synced_folder "docker-scripts/", "/docker-scripts"
+
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?
     config.vm.synced_folder ".", "/vagrant", disabled: true
   end
-  config.vm.synced_folder "docker-scripts/", "/docker-scripts"
-
-  # Provision
-  config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
-  config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
 end
