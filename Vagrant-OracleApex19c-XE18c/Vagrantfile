@@ -162,18 +162,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	   "ORACLE_CHARACTERSET" => "AL32UTF8",
 	   "SYSTEM_TIMEZONE"     => SYSTEM_TIMEZONE
 	}
-  
+
+  # Provision - config user environment:
+  config.vm.provision "shell", path: "provision-scripts/config-user-env.sh"
+
   # Provision Oracle Application Expresss on the first run
   config.vm.provision "shell", path: "provision-scripts/apex.sh"
   
   # Provision Oracle Rest Data Services on the first run
   config.vm.provision "shell", path: "provision-scripts/ords.sh"
 
-  # Provision - custom config:
-  config.vm.provision "shell", path: "provision-scripts/config-user-env.sh"
-
   # SecFix: Mount scripts instead of whole vagrant folder
   config.vm.synced_folder "guest-scripts/", "/scripts"
+  
+  # Mount backups folder for file transfers in/out
+  config.vm.synced_folder "backups/", "/backups"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?

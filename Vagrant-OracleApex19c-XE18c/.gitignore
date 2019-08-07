@@ -1,7 +1,8 @@
 #Ignore 
 /.vagrant/
 /downloads/*
-#/backups/*
+/backups/*
+!/backups/README.md
 *.rpm
 *.zip
 *.log

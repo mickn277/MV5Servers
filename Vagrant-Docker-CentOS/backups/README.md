@@ -1,0 +1,1 @@
+mounted as /backups in guest vm (not available without guest additions)

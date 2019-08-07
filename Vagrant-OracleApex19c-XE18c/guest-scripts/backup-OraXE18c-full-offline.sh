@@ -23,9 +23,9 @@ export PATH=$PATH:$ORACLE_HOME/bin
 
 #BINDIR=/vagrant/mw-scripts
 EMAILTO=#EMAILTO#
-BACKUPDIR=/vagrant/backups
-LOGFILE="$BACKUPDIR/$ORACLE_SID/rman-backup-$ORACLE_SID-`date '+%Y%m%d-%H%M%S'`.log"
-#CMDFILE="$BACKUPDIR/$ORACLE_SID/rman-backup-$ORACLE_SID.rman"
+BACKUPDIR=/backups
+LOGFILE="$BACKUPDIR/rman-backup-$ORACLE_SID-`date '+%Y%m%d-%H%M%S'`.log"
+#CMDFILE="rman-backup-$ORACLE_SID.rman"
 
 if [ ! -d "$BACKUPDIR/$ORACLE_SID" ]; then
   mkdir -p $BACKUPDIR/$ORACLE_SID
@@ -39,8 +39,8 @@ cd "$BACKUPDIR/$ORACLE_SID"
 
 #Start date and time of the backup
 BACKUPSTART=`date '+%d/%m/%Y %H:%M:%S'`
-FREESPACE_INITIAL=`df -h $BACKUPDIR|grep '/'|awk '{ print $6 " " $3 " of " $2 " used, use is " $5 }'`
-USEDSPACE_INITIAL=`du -h $BACKUPDIR/$ORACLE_SID`
+FREESPACE_INITIAL=`df -h ${BACKUPDIR}|grep '/'|awk '{ print $6 " " $3 " of " $2 " used, use is " $5 }'`
+USEDSPACE_INITIAL=`du -h ${BACKUPDIR}/$ORACLE_SID`
 
 #Perform the offline backup
 $ORACLE_HOME/bin/rman target / nocatalog log $LOGFILE <<EOF
@@ -48,11 +48,11 @@ RUN {
 shutdown immediate;
 startup mount;
 
-allocate channel c1 device type disk format '/vagrant/backups/XE/%U' MAXPIECESIZE 10000M MAXOPENFILES 16;
+allocate channel c1 device type disk format '${BACKUPDIR}/XE/%U' MAXPIECESIZE 10000M MAXOPENFILES 16;
 
 backup as compressed backupset database tag "BACKUP_XE_DB";
 backup spfile current controlfile tag "BACKUP_XE_SP_CF";
-sql "create pfile=''/vagrant/backups/XE/initXE.ora'' from spfile";
+sql "create pfile=''${BACKUPDIR}/XE/initXE.ora'' from spfile";
 
 backup as compressed backupset archivelog all not backed up 2 times tag "BACKUP_XE_AL";
 alter database open;
@@ -60,9 +60,8 @@ alter database open;
 delete noprompt obsolete;
 
 restore database validate;
-
-list backup summary;
 }
+list backup summary;
 quit;
 EOF
 

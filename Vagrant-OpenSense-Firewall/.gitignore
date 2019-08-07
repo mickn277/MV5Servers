@@ -2,6 +2,7 @@
 /.vagrant/
 /downloads/*
 /backups/*
+!/backups/README.md
 *.rpm
 *.zip
 *.log

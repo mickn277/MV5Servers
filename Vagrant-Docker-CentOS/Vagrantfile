@@ -65,6 +65,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # SecFix: Mount scripts instead of whole vagrant folder
   config.vm.synced_folder "guest-scripts/", "/scripts"
+  
+  # Mount backups folder for file transfers in/out
+  config.vm.synced_folder "backups/", "/backups"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?

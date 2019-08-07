@@ -4,7 +4,7 @@
 
 # BASH>
 sudo su - oracle
-cd /vagrant/backups/XE
+cd /backups/XE
 
 # Optional: copy initXE.ora to $ORACLE_HOME/dbs directory if it's not available or corrupt.
 
