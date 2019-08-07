@@ -1,0 +1,62 @@
+# --------------------------------------------------------------------------------
+# 
+# --------------------------------------------------------------------------------
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Name in Vagrant & VirtualBox
+NAME = "Vagrant-OpenSense-Firewall"
+
+#Define tests to determine if we are provisioned and or provisioning 
+def provisioned?(provider='virtualbox')
+  File.exists?(File.join(File.dirname(__FILE__),".vagrant/machines/#{NAME}/#{provider}/action_provision"))
+end
+def provisioning?()
+  (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
+end
+
+# TODO: any custom provisioning tests here
+
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "eugenmayer/opnsense"
+  config.vm.define NAME # NO =
+  config.vm.hostname = "opensense" # SecFix: hostname different to vm name
+
+  config.vm.box_check_update = false
+
+  config.vm.network :forwarded_port, guest: 22, host: 2224, id: "ssh"
+
+  # sepecial configurations for bsd shell / opnsense stuff
+  config.ssh.sudo_command = "%c"
+  config.ssh.shell = "/bin/sh"
+  #Initial build password
+  config.ssh.password = "opnsense" 
+  config.ssh.username = "root"
+
+  config.vm.provider 'virtualbox' do |v|
+    v.memory = 1024
+    v.cpus = 1
+    v.name = NAME # BugFix: Name required here also
+    v.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
+    # USB, Serial disabled by default
+
+    # since opnsense expects nic1 (first) to be LAN, lets make it intnet
+    # nic2 is wan, so we are doing nat ( routed to the host )
+    v.customize ['modifyvm', :id, '--nic1', 'intnet', '--nic2', 'nat'] # swap the networks around
+    # Forward the ssh port that was detected during boot.  This changes depending on other VM's running on the system.
+    v.customize ['modifyvm', :id, '--natpf2', "ssh,tcp,127.0.0.1,2224,,22" ] #port forward
+    # Forward the ports to the WebGUI since we use a nat network
+    v.customize ['modifyvm', :id, '--natpf2', "https,tcp,127.0.0.1,10443,,443" ] #port forward
+  end 
+
+  #Sync'd folders not available, no guest additions installed
+  #config.vm.synced_folder "guest-scripts/", "/scripts"
+
+  # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+end
