@@ -20,7 +20,6 @@
 #    20190304 - $Revision: 1.0 $
 #
 #
-
 ### -------------------------------------------------------------------
 ### Disclaimer:
 ###
@@ -55,8 +54,8 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-# Rename VM, define hostname
-NAME = "Vagrant-XE18c-Apex19c-V1"
+# Name in Vagrant & VirtualBox
+NAME = "Vagrant-XE18c-Apex19c"
 
 # Define tests so it's possible to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
@@ -110,14 +109,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ol7-latest"
   config.vm.box_url = "https://yum.oracle.com/boxes/oraclelinux/latest/ol7-latest.box"
   config.vm.define NAME
-  
+  config.vm.hostname = "oraapex" # SecFix: hostname different to vm name
+
   config.vm.box_check_update = false
   
   # Must specify :id "ssh" so it's recognised as the vagrant ssh port
   config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh"
   
-  # change memory size
-  # MW CUSTOM: testing showed 3G required for oralce memory_target=2G
+  # Mick - testing showed 3G required for reliable oralce memory_target=2G
   config.vm.provider "virtualbox" do |v|
     v.memory = 3072
     v.cpus = 3
@@ -126,7 +125,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--audio", "none"]
   end
 
-  # add proxy configuration from host env - optional
+  # Add proxy configuration from host - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
     if ENV["http_proxy"]
@@ -142,9 +141,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # VM hostname
-  config.vm.hostname = NAME
-
   # Oracle port forwarding
   config.vm.network "forwarded_port", guest: 1521, host: 1521, id: "oradb"
   config.vm.network "forwarded_port", guest: 5500, host: 5500, id: "emconsole"
@@ -155,25 +151,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # ----------------------------------------
   
   # Provision and update Oracle Linux 7
-  config.vm.provision "shell", path: "scripts/install.sh"
+  config.vm.provision "shell", path: "provision-scripts/install.sh"
 
-  # MW CUSTOM: Provision - extra installs and configs
-  config.vm.provision "shell", path: "mw-scripts/provision-redhat-installs-configs.sh"
+  # Provision - regional settings, must be before database
+  config.vm.provision "shell", path: "provision-scripts/config-region.sh"
 
   # Provision Oracle Database on the first run
-  config.vm.provision "shell", path: "scripts/database.sh", env:
-    {
-       "ORACLE_CHARACTERSET" => "AL32UTF8",
-       "SYSTEM_TIMEZONE"     => SYSTEM_TIMEZONE
-    }
-  
-  # MW CUSTOM: Provision - custom config:
-  config.vm.provision "shell", path: "mw-scripts/provision-database-xe18c-config.sh"
+  config.vm.provision "shell", path: "provision-scripts/database.sh", env:
+	{
+	   "ORACLE_CHARACTERSET" => "AL32UTF8",
+	   "SYSTEM_TIMEZONE"     => SYSTEM_TIMEZONE
+	}
   
   # Provision Oracle Application Expresss on the first run
-  config.vm.provision "shell", path: "scripts/apex.sh"
+  config.vm.provision "shell", path: "provision-scripts/apex.sh"
   
   # Provision Oracle Rest Data Services on the first run
-  config.vm.provision "shell", path: "scripts/ords.sh"
+  config.vm.provision "shell", path: "provision-scripts/ords.sh"
 
+  # Provision - custom config:
+  config.vm.provision "shell", path: "provision-scripts/config-user-env.sh"
+
+  # SecFix: Mount scripts instead of whole vagrant folder
+  config.vm.synced_folder "guest-scripts/", "/scripts"
+
+  # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
+  if provisioned?
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  end
 end

@@ -23,8 +23,8 @@
 
 . /home/oracle/.bashrc 
 
-export ORACLE_PWD=`cat /vagrant/apex-pwd`
-rm -f /vagrant/apex-pwd
+export ORACLE_PWD=`cat /vagrant/apex-pwd.log`
+rm -f /vagrant/apex-pwd.log
 
 # Install ORDS
 mkdir $ORACLE_BASE/ords

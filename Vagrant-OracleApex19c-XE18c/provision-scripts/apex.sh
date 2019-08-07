@@ -23,7 +23,7 @@
 
 . /home/oracle/.bashrc 
 
-export ORACLE_PWD=`cat /vagrant/apex-pwd`
+export ORACLE_PWD=`cat /vagrant/apex-pwd.log`
 ORACLE_PDB="`ls -dl $ORACLE_BASE/oradata/$ORACLE_SID/*/ | grep -v pdbseed | awk '{print $9}' | cut -d/ -f6`"
 echo "export ORACLE_PDB=$ORACLE_PDB" >> /home/oracle/.bashrc
 
