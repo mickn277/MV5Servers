@@ -1,7 +1,7 @@
-#MW:
-.vagrant
+#Ignore 
+/.vagrant/
+/downloads/*
+/backups/*
 *.rpm
-ords*.zip
-apex*.zip
-/downloads
-/backups
+*.zip
+*.log

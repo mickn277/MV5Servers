@@ -24,29 +24,39 @@ end
 # --------------------------------------------------------------------------------
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box = "centos/7"
-    #config.vm.box_url = ""
-    config.vm.define NAME
+  #BugFix: "centos/7" does't have GuestAdditions installed, which causes no end of grief.  5 Million people with this issue!
+  #config.vm.box = "centos/7"
+  config.vm.box = "generic/centos7"
+  config.vm.define NAME
+  config.vm.hostname = "pgtimescale" # SecFix: hostname different to vm name
 
-    # Must specify :id "ssh" so it's recognised as the vagrant ssh port
-    config.vm.network :forwarded_port, guest: 22, host: 2224, id: "ssh"
+  # Must specify :id "ssh" so it's recognised as the vagrant ssh port
+  config.vm.network :forwarded_port, guest: 22, host: 2225, id: "ssh"
 
-    config.vm.provider :virtualbox do |v, override|
-        v.name = NAME
-        v.memory = 3072
-        v.cpus = 2
-        v.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
-        override.vm.box_download_checksum_type = "sha256"
-        override.vm.box_download_checksum = "b24c912b136d2aa9b7b94fc2689b2001c8d04280cf25983123e45b6a52693fb3"
-        override.vm.box_url = "https://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-x86_64-Vagrant-1803_01.VirtualBox.box"
-    end
+  config.vm.provider :virtualbox do |v, override|
+      v.name = NAME
+      v.memory = 3072
+      v.cpus = 4
+      v.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
+      override.vm.box_download_checksum_type = "sha256"
+      override.vm.box_download_checksum = "b24c912b136d2aa9b7b94fc2689b2001c8d04280cf25983123e45b6a52693fb3"
+      override.vm.box_url = "https://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-x86_64-Vagrant-1803_01.VirtualBox.box"
+  end
 
-    # Database port forwarding
-    config.vm.network "forwarded_port", guest: 5432, host: 5432, id: "postgres"
-    
-    # Provision - Centos
-    config.vm.provision "shell", path: "scripts/installs-centos.sh"
+  # Database port forwarding
+  config.vm.network "forwarded_port", guest: 5432, host: 5432, id: "postgres"
+  
+  # Provision - Centos
+  config.vm.provision "shell", path: "provision-scripts/installs-centos.sh"
 
-    # Provision - extra installs and configs
-    config.vm.provision "shell", path: "scripts/postgres-setup.sh"
+  # Provision - extra installs and configs
+  config.vm.provision "shell", path: "provision-scripts/postgres-setup.sh"
+
+  # SecFix: Mount scripts instead of whole vagrant folder
+  config.vm.synced_folder "guest-scripts/", "/scripts"
+
+  # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
+  if provisioned?
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  end
 end
