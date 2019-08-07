@@ -1,12 +1,13 @@
-# vagrant-centos-docker
+# vagrant-docker-host
 
-Provides a CentOS 7 host running Docker CE (Community Edition). Installs Docker following the
-official instructions at https://docs.docker.com/engine/installation/linux/docker-ce/centos/
-as closely as practical.
-
+Provides a CentOS 7 host running Docker CE (Community Edition). 
 Installs CentOS, Docker CE and tests the finished image with `docker run hello-world`.
-
 Supports [Docker CE](https://docs.docker.com/install/) Stable and Test. See `install-docker.sh` for details.
+
+https://docs.docker.com/engine/installation/linux/docker-ce/centos/
+
+# TODO:
+Errors during build, can't create proxy file for docker.
 
 # Usage
 
@@ -32,15 +33,11 @@ I am testing Docker with Kernel User Namespaces. This repo includes a simple
 shell script, `enable-user-namespaces.sh` which can be used with or without
 Vagrant, or a just a guide on any CentOS 7.4+ host.
 
-On RHEL/CentOS 7.2 - 7.3, User Namespaces were an experimental "Tech Preview".
-They are now fully supported in 7.4 according to https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html-single/7.4_release_notes/index .
+On RHEL/CentOS 7.4, User Namespaces are supported according to https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html-single/7.4_release_notes/index .
 
-On RHEL 7.4, User Namespaces are enabled in the Kernel by passing on
-`user_namespace.enable=1` flag. However, to do useful things with User
-Namespaces and Docker, the root user within the user namespace will needs the
-ability to mount and unmount things. Therefore, we also enable
-`namespace.unpriv_enable=1`, which is an *experimental* (Tech Preview) option
-in RHEL/CentOS 7.4.
+On RHEL 7.4, User Namespaces are enabled in the Kernel by passing on `user_namespace.enable=1` flag. However, to do useful things with User
+Namespaces and Docker, the root user within the user namespace will needs the ability to mount and unmount things. Therefore, we also enable
+`namespace.unpriv_enable=1`, which is an *experimental* (Tech Preview) option in RHEL/CentOS 7.4.
 
 References:
 * https://github.com/procszoo/procszoo/wiki/How-to-enable-%22user%22-namespace-in-RHEL7-and-CentOS7%3F
