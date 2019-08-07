@@ -1,2 +1,7 @@
-.vagrant
+#Ignore 
+/.vagrant/
+/downloads/*
+/backups/*
+*.rpm
+*.zip
 *.log

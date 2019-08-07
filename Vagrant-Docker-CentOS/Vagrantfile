@@ -8,8 +8,8 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-# define hostname
-NAME = "Vagrant-Docker-CentOS7"
+# Name in Vagrant & VirtualBox
+NAME = "Vagrant-Docker-Host"
 
 #Define tests to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
@@ -22,14 +22,15 @@ end
 # TODO: any custom provisioning tests here
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define NAME
   #BugFix: "centos/7" does't have GuestAdditions installed, which causes no end of grief.  5 Million people with this issue!
   #config.vm.box = "centos/7"
   config.vm.box = "generic/centos7"
-  config.vm.hostname = NAME # VM hostname
-  config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
-  
+  config.vm.define NAME # NO =
+  config.vm.hostname = "docker-host" # SecFix: hostname different to vm name
+
   config.vm.box_check_update = false
+
+  config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
 
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
@@ -41,6 +42,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # USB, Serial disabled by default
   end
   
+
   # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
@@ -61,7 +63,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
   config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
 
-  config.vm.synced_folder "docker-scripts/", "/docker-scripts"
+  # SecFix: Mount scripts instead of whole vagrant folder
+  config.vm.synced_folder "guest-scripts/", "/scripts"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?
