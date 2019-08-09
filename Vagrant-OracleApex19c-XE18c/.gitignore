@@ -1,6 +1,7 @@
 #Ignore 
 /.vagrant/
 /downloads/*
+!/downloads/README.md
 /backups/*
 !/backups/README.md
 *.rpm
