@@ -1,0 +1,1 @@
+cp "Notepad++ - VS2015Dark.xml" "%APPDATA%\Notepad++\VS2015Dark.xml"
