@@ -79,7 +79,7 @@ EOF'
 
 echo 'INSTALL: Global EM Express port enabled'
 
-echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD" > /vagrant/apex-pwd.log
+echo $ORACLE_PWD > /vagrant/apex-pwd.log
 
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 

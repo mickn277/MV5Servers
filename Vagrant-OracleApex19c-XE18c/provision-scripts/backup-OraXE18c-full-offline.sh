@@ -2,13 +2,13 @@
 
 # --------------------------------------------------------------------------------
 # Purpose:
-#  
+#  Offline backup of Oracle XE database to /backup mounted directory.
+# 
 # Requirements:
 #  
 # History:
 #  07/02/2019 - Mick Wells, Wrote Script.
-
-# @/vagrant/mw-scripts/backup-OraXE18c-full-offline.rman
+#
 # --------------------------------------------------------------------------------
 
 #DEBUG:
