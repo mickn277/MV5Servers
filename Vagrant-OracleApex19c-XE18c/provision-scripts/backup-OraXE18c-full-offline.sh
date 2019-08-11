@@ -27,6 +27,11 @@ BACKUPDIR=/backups
 LOGFILE="$BACKUPDIR/rman-backup-$ORACLE_SID-`date '+%Y%m%d-%H%M%S'`.log"
 #CMDFILE="rman-backup-$ORACLE_SID.rman"
 
+if [ ! -d "$BACKUPDIR" ]; then
+	echo '$BACKUPDIR not mounted, exiting script'
+	exit 1
+fi
+
 if [ ! -d "$BACKUPDIR/$ORACLE_SID" ]; then
   mkdir -p $BACKUPDIR/$ORACLE_SID
   if [ ! -d $BACKUPDIR/$ORACLE_SID ]; then
