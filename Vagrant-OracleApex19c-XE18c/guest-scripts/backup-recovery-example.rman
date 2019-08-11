@@ -13,7 +13,7 @@ $ORACLE_HOME/bin/rman target / nocatalog
 
 
 # --------------------------------------------------------------------------------
-# Perform recovery
+# Perform recovery of corrupted database:
 # --------------------------------------------------------------------------------
 -- Optional: if Oracle is running:
 shutdown immediate;
@@ -26,6 +26,11 @@ catalog start with '/backups/XE';
 -- Show the backups we have available:
 list backup summary;
 list backup;
+
+
+RESTORE CONTROLFILE FROM TAG 'BACKUP_XE_SP_CF';
+RESTORE CONTROLFILE FROM AUTOBACKUP;
+RESTORE CONTROLFILE FROM "/backups/#PIECENAME#"; 
 
 RESTORE DATABASE FROM TAG "BACKUP_XE_DB";
 

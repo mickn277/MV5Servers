@@ -20,7 +20,7 @@ export ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
 export ORACLE_SID=XE
 export PATH=$PATH:$ORACLE_HOME/bin
 
-#  Increase 
+# Increase memory size to max, requres VM to have 3GB ram:
 su -l oracle -c 'sqlplus / as sysdba <<EOF
 -- Rollback Prep:
 create pfile from spfile;
@@ -36,6 +36,11 @@ startup
 EOF'
 
 echo 'DATABASE-CONFIG Cron enable offline weekly db backup script'
+
+# Oracle rman backup config:
+su -l oracle -c '$ORACLE_HOME/bin/rman target / nocatalog log /vagrant/rman-config.log cmdfile /vagrant/provision-scripts/oracle-rman-config.rman'
+
+# Oracle rman backup schedule:
 su -l oracle -c 'mkdir $HOME/bin'
 su -l oracle -c 'cp /vagrant/provision-scripts/backup-OraXE18c-full-offline.sh $HOME/bin/'
 su -l oracle -c 'chmod +x $HOME/bin/backup-OraXE18c-full-offline.sh'
