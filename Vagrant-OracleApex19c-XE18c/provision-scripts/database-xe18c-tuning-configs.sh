@@ -11,8 +11,9 @@
 #  05/07/2019 - Mick Wells, Wrote Script
 # --------------------------------------------------------------------------------
 
-echo 'DATABASE-TUNING Start'
+echo 'DATABASE-CONFIG Start'
 
+echo 'DATABASE-CONFIG Apply Tuning'
 # set environment variables
 export ORACLE_BASE=/opt/oracle
 export ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
@@ -34,4 +35,11 @@ shutdown immediate
 startup
 EOF'
 
-echo 'DATABASE-TUNING Complete'
+echo 'DATABASE-CONFIG Cron enable offline weekly db backup script'
+su -l oracle -c 'mkdir $HOME/bin'
+su -l oracle -c 'cp /vagrant/provision-scripts/backup-OraXE18c-full-offline.sh $HOME/bin/'
+su -l oracle -c 'chmod +x $HOME/bin/backup-OraXE18c-full-offline.sh'
+su -l oracle -c 'crontab /vagrant/provision-scripts/oracle.crontab'
+su -l oracle -c 'crontab -l'
+
+echo 'DATABASE-CONFIG Complete'
