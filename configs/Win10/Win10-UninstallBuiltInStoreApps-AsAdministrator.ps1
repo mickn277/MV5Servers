@@ -47,7 +47,7 @@ Get-AppxPackage *WindowsCalculator* | Remove-AppxPackage
 #Get-AppxPackage *skypeapp* | Remove-AppxPackage
 #Get-AppxPackage *getstarted* | Remove-AppxPackage
 #Get-AppxPackage *windowsmaps* | Remove-AppxPackage
-Get-AppxPackage *windowsphone* | Remove-AppxPackage
+#Get-AppxPackage *windowsphone* | Remove-AppxPackage
 #Get-AppxPackage *photos* | Remove-AppxPackage
 #Get-AppxPackage *windowsstore* | Remove-AppxPackage
 #Get-AppxPackage *soundrecorder* | Remove-AppxPackage
