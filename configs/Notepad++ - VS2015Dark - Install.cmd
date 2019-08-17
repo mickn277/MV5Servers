@@ -1,1 +1,0 @@
-cp "Notepad++ - VS2015Dark.xml" "%APPDATA%\Notepad++\themes\VS2015Dark.xml"
