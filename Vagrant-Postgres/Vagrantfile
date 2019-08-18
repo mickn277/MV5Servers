@@ -62,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 22, host: 2225, id: "ssh"
 
   # Internal network for interserver comms
-  config.vm.network "private_network", ip: "192.168.0.5/24", virtualbox__intnet: true #type: "dhcp",
+  config.vm.network "private_network", ip: "192.168.0.5", virtualbox__intnet: true
 
   # Database port forwarding
   config.vm.network "forwarded_port", guest: 5432, host: 5432, id: "postgres"
@@ -99,7 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Mount backups folder for file transfers in/out
   config.vm.synced_folder "backups/", "/backups"
-    
+
   # ----------------------------------------
   # Provision (Initial boot only)
   # ----------------------------------------
