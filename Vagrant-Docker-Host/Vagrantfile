@@ -1,15 +1,25 @@
 # --------------------------------------------------------------------------------
+# Purpose:
+#
+# Requirements:
 # 
+# History:
+#
 # --------------------------------------------------------------------------------
 
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+# --------------------------------------------------------------------------------
+# Declares
+# --------------------------------------------------------------------------------
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
 # Name in Vagrant & VirtualBox
 NAME = "Vagrant-Docker-Host"
+HOSTNAME = "dockerhost"
 
 #Define tests to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
@@ -19,30 +29,52 @@ def provisioning?()
   (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
 end
 
-# TODO: any custom provisioning tests here
+# --------------------------------------------------------------------------------
+# Prerequisites
+# --------------------------------------------------------------------------------
+
+# Vagrant prerequisites
+unless Vagrant.has_plugin?("vagrant-reload")
+  puts 'Installing vagrant-reload Plugin...'
+  system('vagrant plugin install vagrant-reload')
+end
+unless Vagrant.has_plugin?("vagrant-proxyconf")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-proxyconf')
+end
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-vbguest')
+end
+
+# --------------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------------
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  #BugFix: "centos/7" does't have GuestAdditions installed, which causes no end of grief.  5 Million people with this issue!
-  #config.vm.box = "centos/7"
-  config.vm.box = "generic/centos7"
-  config.vm.define NAME # NO =
-  config.vm.hostname = "docker-host" # SecFix: hostname different to vm name
+  #BugFix: "centos/7" does't have GuestAdditions installed, requires "vagrant plugin install vagrant-vbguest"
+  config.vm.box = "centos/7"
+  config.vm.define NAME
+  config.vm.hostname = HOSTNAME # SecFix: hostname different to vm name
 
   config.vm.box_check_update = false
 
+    # Must specify :id "ssh" so it's recognised as the vagrant ssh port
   config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
 
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 1024
-    v.cpus = 1
+  # Internal network for interserver comms
+  config.vm.network "private_network", ip: "192.168.0.3/24", virtualbox__intnet: true #type: "dhcp", 
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4096
+    vb.cpus = 4
     # BugFix: Name required here also
-    v.name = NAME
+    vb.name = NAME
     # Prevent VirtualBox from interfering with host audio stack
-    v.customize ["modifyvm", :id, "--audio", "none"]
+    vb.customize ["modifyvm", :id, "--audio", "none"]
     # USB, Serial disabled by default
   end
   
-
   # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
@@ -59,15 +91,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # Provision
-  config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
-  config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
-
   # SecFix: Mount scripts instead of whole vagrant folder
   config.vm.synced_folder "guest-scripts/", "/scripts"
   
   # Mount backups folder for file transfers in/out
   config.vm.synced_folder "backups/", "/backups"
+  
+  # ----------------------------------------
+  # Provision (Initial boot only)
+  # ----------------------------------------
+  
+  config.vm.provision :shell, path: "provision-scripts/config-region.sh"
+
+  config.vm.provision :shell, path: "provision-scripts/linux-utils.sh"
+
+  config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
+
+  config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?

@@ -16,6 +16,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# --------------------------------------------------------------------------------
+# Declares
+# --------------------------------------------------------------------------------
+
 # Vagrant API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -31,16 +35,36 @@ def provisioning?()
     (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
 end
 
-# Virtualbox prerequisites
-unless Vagrant.has_plugin?("vagrant-reload")
-    puts 'Installing vagrant-reload Plugin...'
-    system('vagrant plugin install vagrant-reload')
-  end
-  unless Vagrant.has_plugin?("vagrant-proxyconf")
-    puts 'Installing vagrant-proxyconf Plugin...'
-    system('vagrant plugin install vagrant-proxyconf')
-  end
+# --------------------------------------------------------------------------------
+# Prerequisites
+# --------------------------------------------------------------------------------
 
+# Vagrant prerequisites
+unless Vagrant.has_plugin?("vagrant-reload")
+  puts 'Installing vagrant-reload Plugin...'
+  system('vagrant plugin install vagrant-reload')
+end
+unless Vagrant.has_plugin?("vagrant-proxyconf")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-proxyconf')
+end
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-vbguest')
+end
+
+# Provision prerequisites
+# e.g. files downloaded, etc.
+if (not provisioned?) || provisioning?
+  unless !Dir.glob('./downloads/oracle-database-xe-18c*.rpm').empty?
+    puts 'downloaded database rpm not found'
+    exit
+  end
+end
+
+# --------------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------------
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box = "#BASEBOX_NAME#"
     config.vm.box_url = "#BASEBOX_URL#"
@@ -49,11 +73,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.hostname = NAME
   
     # Configure VM Properties
-    config.vm.provider "virtualbox" do |v|
-        v.memory = 512
-        v.cpus = 1
-        v.name = NAME
-        v.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = 512
+        vb.cpus = 1
+        vb.name = NAME
+        vb.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
     end
 
     # Proxy configuration from host env - optional
@@ -73,12 +97,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     # SecFix: Don't map the root of vagrant as the path leads to the private keys etc.
-    if provisioned?
+    if provisioned? && (not provisioning?)
         config.vm.synced_folder ".", "/vagrant", disabled: true
     end
 
-    config.vm.synced_folder "scripts/", "/var/scripts"
-    config.vm.synced_folder "backups/", "/var/backups"
+    config.vm.synced_folder "guest-scripts/", "/scripts"
+    config.vm.synced_folder "backups/", "/backups"
 
     #Provisioning?
     config.vm.provision :shell, path: "provisioning-scripts/install-docker.sh"
@@ -179,3 +203,19 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
 end
 ```
+
+#### Vagrant Virtualbox internal private networks
+
+```ruby
+Vagrant.configure("2") do |config|
+  # Private static network
+  config.vm.network "private_network", ip: "192.168.50.4/24", virtualbox__intnet: true
+
+  # Private dhcp internal network
+  config.vm.network "private_network", type: "dhcp", virtualbox__intnet: true
+
+  # Private dhcp internal network with static address
+  config.vm.network "private_network", type: "dhcp",ip: "192.168.50.3/24", virtualbox__intnet: true
+end
+```
+  

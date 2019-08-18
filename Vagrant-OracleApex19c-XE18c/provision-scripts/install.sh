@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo 'INSTALL: Start'
 
@@ -13,9 +13,5 @@ echo 'INSTALL: System updated'
 # (preinstall is pulled automatically with 18c XE rpm, but it
 #  doesn't create /home/oracle unless it's installed separately)
 yum install -y oracle-database-preinstall-18c openssl
-
-
-yum install -y glances iftop
-echo 'INSTALL: performance utilities'
 
 echo 'INSTALL: Complete'

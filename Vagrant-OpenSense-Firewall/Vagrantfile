@@ -59,12 +59,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #VBoxManage dhcpserver remove --netname intnet
     #VBoxManage dhcpserver add --netname intnet --ip 10.0.2.0 --netmask 255.255.255.0 --lowerip 10.0.02.101 --upperip 10.0.2.254 --
   end 
-
+  
   #Sync'd folders not available, no guest additions installed
   #config.vm.synced_folder "guest-scripts/", "/scripts"
-
+    
+  # ----------------------------------------
+  # Provision (Initial boot only)
+  # ----------------------------------------
+  
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
-  config.vm.synced_folder ".", "/vagrant", disabled: true
+  if provisioned?
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  end
 end
 
 puts 'Access via URL: https://localhost:10443/'

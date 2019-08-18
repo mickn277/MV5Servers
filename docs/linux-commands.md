@@ -20,13 +20,16 @@ sudo yum-config-manager --quiet --add-repo https://download.docker.com/linux/cen
 sudo yum-config-manager --enable docker-ce-test
 
 # Install from repo
-sudo yum install --assumeyes --quiet docker-ce
+sudo yum install --assumeyes docker-ce
 
 # Start installed service
 sudo systemctl start docker
 
 # Enable installed service
 sudo systemctl enable docker
+
+# Show status of all repos
+yum repolist all
 ```
 
 ## Crontab Template

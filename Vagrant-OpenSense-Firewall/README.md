@@ -9,11 +9,11 @@ You want to either quickly
 
 ## Trying OPNsense
 
- - Install vagrant https://www.vagrantup.com/downloads.html
+Install vagrant https://www.vagrantup.com/downloads.html
  
  ```
 mkdir /tmp/mytest && cd /tmp/mytest
-curl -o Vagrantfile https://raw.githubusercontent.com/EugenMayer/packer-opnsense/master/Vagrantfile
+curl -o Vagrantfile 'https://raw.githubusercontent.com/EugenMayer/packer-opnsense/master/Vagrantfile'
 vagrant up opnsense
 ```
 

@@ -65,7 +65,7 @@ def provisioning?()
   (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
 end
 
-# Virtualbox prerequisites
+# Vagrant prerequisites
 unless Vagrant.has_plugin?("vagrant-reload")
   puts 'Installing vagrant-reload Plugin...'
   system('vagrant plugin install vagrant-reload')
@@ -73,6 +73,10 @@ end
 unless Vagrant.has_plugin?("vagrant-proxyconf")
   puts 'Installing vagrant-proxyconf Plugin...'
   system('vagrant plugin install vagrant-proxyconf')
+end
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-vbguest')
 end
 
 # Tests for provisioning prerequisites ...
@@ -115,7 +119,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Must specify :id "ssh" so it's recognised as the vagrant ssh port
   config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh"
-  
+
+  # Internal network for interserver comms
+  #config.vm.network "private_network", type: "dhcp", ip: "192.168.0.2/24", virtualbox__intnet: true
+
+  # Oracle port forwarding
+  config.vm.network "forwarded_port", guest: 1521, host: 1521, id: "oradb"
+  config.vm.network "forwarded_port", guest: 5500, host: 5500, id: "emconsole"
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "apex"
+
   # Mick - testing showed 3G required for reliable oralce memory_target=2G
   config.vm.provider "virtualbox" do |v|
     v.memory = 3072
@@ -141,20 +153,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # Oracle port forwarding
-  config.vm.network "forwarded_port", guest: 1521, host: 1521, id: "oradb"
-  config.vm.network "forwarded_port", guest: 5500, host: 5500, id: "emconsole"
-  config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "apex"
+  # SecFix: Mount scripts instead of whole vagrant folder
+  config.vm.synced_folder "guest-scripts/", "/scripts"
   
+  # Mount backups folder for file transfers in/out
+  config.vm.synced_folder "backups/", "/backups"
+
   # ----------------------------------------
   # Provision (Initial boot only)
   # ----------------------------------------
-  
-  # Provision and update Oracle Linux 7
-  config.vm.provision "shell", path: "provision-scripts/install.sh"
 
   # Provision - regional settings, must be before database
   config.vm.provision "shell", path: "provision-scripts/config-region.sh"
+
+  # Provision and update Oracle Linux 7
+  config.vm.provision "shell", path: "provision-scripts/install.sh"
 
   # Provision Oracle Database on the first run
   config.vm.provision "shell", path: "provision-scripts/database.sh", env:
@@ -164,7 +177,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	}
 
   # Provision - config user environment:
-  config.vm.provision "shell", path: "provision-scripts/config-user-env.sh"
+  config.vm.provision "shell", path: "provision-scripts/config-oracle-env.sh"
+
+  # Provision linux diag and perf utils
+  config.vm.provision "shell", path: "provision-scripts/linux-utils.sh"
 
   # Provision Oracle Application Expresss on the first run
   config.vm.provision "shell", path: "provision-scripts/apex.sh"
@@ -174,12 +190,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Provision Oracle tuning, backups and other configs
   config.vm.provision "shell", path: "provision-scripts/database-xe18c-tuning-configs.sh"
-
-  # SecFix: Mount scripts instead of whole vagrant folder
-  config.vm.synced_folder "guest-scripts/", "/scripts"
-  
-  # Mount backups folder for file transfers in/out
-  config.vm.synced_folder "backups/", "/backups"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?
