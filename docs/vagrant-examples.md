@@ -139,11 +139,15 @@ end
 #### Windows batch session proxy config
 
 ```batch
+@REM Password must be http encoded
 @SET http_proxy=http://#USERNAME#:#PASSWORD#@#PROXY_HOSTNAME#:#PROXY_PORT#
 @SET https_proxy=%http_proxy%
-@SET no_proxy=127.0.0.1
+@SET no_proxy=localhost,127.0.0.0/8,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12
 @SET VAGRANT_HTTP_PROXY=%http_proxy%
 @SET VAGRANT_NO_PROXY=%no_proxy%
+
+@REM Check environment
+set | find /I "proxy"
 
 @ECHO Run: vagrant up
 ```
@@ -151,11 +155,15 @@ end
 #### Windows powershell session proxy config
 
 ```powershell
+# Password must be http encoded
 $env:http_proxy="http://#USERNAME#:#PASSWORD#@#PROXY_HOSTNAME#:#PROXY_PORT#"
 $env:https_proxy=$env:http_proxy
-$env:no_proxy="127.0.0.1"
+$env:no_proxy="localhost,127.0.0.0/8,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
 $env:VAGRANT_HTTP_PROXY=$env:http_proxy
 $env:VAGRANT_NO_PROXY=$env:no_proxy
+
+# Check environmet:
+Get-ChildItem Env: | Where-Object Name -like "*http*"
 
 echo "Run: vagrant up"
 ```
@@ -165,16 +173,16 @@ echo "Run: vagrant up"
 ```ruby
 Vagrant.configure("2") do |config|
 
-  # add proxy configuration from host env - optional
+  # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
     if ENV["http_proxy"]
-      puts "http_proxy: " + ENV["http_proxy"]
-      config.proxy.http     = ENV["http_proxy"]
+      puts "http_proxy found, adding on guest"
+      config.proxy.http = ENV["http_proxy"]
     end
     if ENV["https_proxy"]
-      puts "https_proxy: " + ENV["https_proxy"]
-      config.proxy.https    = ENV["https_proxy"]
+      puts "https_proxy found, adding on guest"
+      config.proxy.https = ENV["https_proxy"]
     end
     if ENV["no_proxy"]
       config.proxy.no_proxy = ENV["no_proxy"]
@@ -218,4 +226,10 @@ Vagrant.configure("2") do |config|
   config.vm.network "private_network", type: "dhcp",ip: "192.168.50.3/24", virtualbox__intnet: true
 end
 ```
-  
+
+#### Vagrant other useful commands
+
+```ruby
+# Hide passwords in vagrant output
+config.vagrant.sensitive = ["MySecretPassword", ENV["MY_TOKEN"]]
+```
