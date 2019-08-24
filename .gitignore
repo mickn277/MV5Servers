@@ -1,2 +1,5 @@
-# Ignore
-.vagrant
+#Ignore 
+.vagrant/
+/backups/*
+!/backups/README.md
+*.log
