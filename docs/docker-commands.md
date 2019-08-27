@@ -7,14 +7,17 @@ docker build --tag local-nginx:latest ./
 # List docker images
 docker image ls
 
-# (Optional) Tag and image
+# (Optional) Tag an image
 docker tag 82b145b9c8e9 local-nginx:latest
 
-# Remove tag of image
+# Remove image using tag
 docker rmi REPOSITORY[:TAG]|IMAGE_ID
 
 # Run an image with a name (--name) and background it (-d)
 docker run -d --name CONTAINER_NAME IMAGE_NAME
+
+# Stop running container
+docker stop CONTAINER_NAME
 
 # Show running containers
 docker ps
@@ -25,31 +28,14 @@ docker ps --filter "status=exited"
 # Get a shell in the command
 docker exec -it CONTAINER_NAME /bin/bash
 
-docker stop CONTAINER_NAME
-
 # Cleanup containers that exited with errors:
 docker ps --filter "status=exited"| grep 'Exited (1)' | awk '{print $1}' | xargs docker rm
-
-# Cleanup all containers:
-docker ps --filter "status=exited"| grep 'Exited' | awk '{print $1}' | xargs docker rm
 ```
 
 
+## docker --help
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```bash
 Management Commands:
   builder     Manage builds
   config      Manage Docker configs
@@ -71,13 +57,13 @@ Management Commands:
 Commands:
   attach      Attach local standard input, output, and error streams to a running container
   build       Build an image from a Dockerfile
-  commit      Create a new image from a container's changes
+  commit      Create a new image from a containers changes
   cp          Copy files/folders between a container and the local filesystem
   create      Create a new container
-  diff        Inspect changes to files or directories on a container's filesystem
+  diff        Inspect changes to files or directories on a containers filesystem
   events      Get real time events from the server
   exec        Run a command in a running container
-  export      Export a container's filesystem as a tar archive
+  export      Export a containers filesystem as a tar archive
   history     Show the history of an image
   images      List images
   import      Import the contents from a tarball to create a filesystem image
@@ -109,3 +95,4 @@ Commands:
   update      Update configuration of one or more containers
   version     Show the Docker version information
   wait        Block until one or more containers stop, then print their exit codes
+  ```
