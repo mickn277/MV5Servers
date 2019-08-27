@@ -60,8 +60,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box_check_update = false
 
-    # Must specify :id "ssh" so it's recognised as the vagrant ssh port
+  # Must specify :id "ssh" so it's recognised as the vagrant ssh port
   config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
+
+  # TODO: docker nginx test image
+  config.vm.network "forwarded_port", guest: 8080, host: 8081, id: "docker-apex"
 
   # Internal network for interserver comms
   config.vm.network "private_network", ip: "192.168.0.3", virtualbox__intnet: true
@@ -96,13 +99,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # SecFix: After provision, mount purposeful folders, rather than whole vagrant folder
 
   # backups out
-  config.vm.synced_folder "../guest-backups/", "/backups"
+  config.vm.synced_folder "guest-backups/", "/backups"
 
   # data in/out
-  config.vm.synced_folder "../guest-data/", "/data"
+  config.vm.synced_folder "guest-data/", "/data"
   
   # scripts in
-  config.vm.synced_folder "../guest-scripts/", "/scripts"
+  config.vm.synced_folder "guest-scripts/", "/scripts"
   
   # ----------------------------------------
   # Provision (Initial boot only)

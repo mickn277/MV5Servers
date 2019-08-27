@@ -2,8 +2,12 @@
 /.vagrant/
 /downloads/*
 !/downloads/README.md
-/backups/*
-!/backups/README.md
+/guest-backups/*
+!/guest-backups/README.md
+/guest-data/*
+!/guest-data/README.md
+/guest-scripts/*
+!/guest-scripts/README.md
 *.rpm
 *.zip
 *.log

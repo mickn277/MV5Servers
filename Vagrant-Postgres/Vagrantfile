@@ -97,13 +97,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # SecFix: After provision, mount purposeful folders, rather than whole vagrant folder
 
   # backups out
-  config.vm.synced_folder "../guest-backups/", "/backups"
+  config.vm.synced_folder "guest-backups/", "/backups"
 
   # data in/out
-  config.vm.synced_folder "../guest-data/", "/data"
+  config.vm.synced_folder "guest-data/", "/data"
   
   # scripts in
-  config.vm.synced_folder "../guest-scripts/", "/scripts"
+  config.vm.synced_folder "guest-scripts/", "/scripts"
 
   # ----------------------------------------
   # Provision (Initial boot only)

@@ -1,0 +1,1 @@
+mounted as /vagrant/downloads on guest vm during provision
