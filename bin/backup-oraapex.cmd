@@ -38,38 +38,45 @@
 @REM Config:
 @REM --------------------------------------------------------------------------------
 
-@SET VAGRANT=Vagrant-OracleApex19c-XE18c
+@SET VAGRANTHOST=Vagrant-XE18c-Apex19c
 @IF NOT "%1"=="" SET VAGRANT=%1
 
 @SET SCRIPTNAME=%~nx0
 @SET CURRENTDIR=%~dp0
 @SET BACKUPDIR=C:\var\backups\MarvinV5\
-@SET LOGFILE=C:\var\backups\backup-%VAGRANT%.log
+@SET LOGFILE=C:\var\backups\backup-%VAGRANTHOST%.log
+
+@REM The script was coppied to this location during the build
+@SET V_COMMAND=sudo -u oracle /home/oracle/bin/backup-OraXE18c-full-offline.sh
 
 @REM --------------------------------------------------------------------------------
 @REM Main:
 @REM --------------------------------------------------------------------------------
 
-@ECHO LOGSTART %SCRIPTNAME% BACKUPS ^"Backup %VAGRANT%^" > "%LOGFILE%""
+@ECHO LOGSTART %SCRIPTNAME% BACKUPS ^"Backup %VAGRANTHOST%^" > "%LOGFILE%""
 
-cd "%CURRENTDIR%..\%VAGRANT%\"
+vagrant ssh %VAGRANTHOST% --command "%V_COMMAND%"
 
-@IF NOT EXIST "%BACKUPDIR%%VAGRANT%\" mkdir "%BACKUPDIR%%VAGRANT%\"
+:STARTCOPYLOCAL
+cd "%CURRENTDIR%..\%VAGRANTHOST%\"
+
+@IF NOT EXIST "%BACKUPDIR%%VAGRANTHOST%\" mkdir "%BACKUPDIR%%VAGRANTHOST%\"
 
 @SET ZIPOPTS=
-@SET ZIPFILE=%BACKUPDIR%%VAGRANT%\.vagrant.zip
+@SET ZIPFILE=%BACKUPDIR%%VAGRANTHOST%\.vagrant.zip
 @IF EXIST "%ZIPFILE%" @SET ZIPOPTS=-u
 zip -r -S %ZIPOPTS% "%ZIPFILE%" ".vagrant"
 @IF EXIST "%ZIPFILE%" @ECHO LOGINFO %SCRIPTNAME% BACKUPS ^"completed zipping '%ZIPFILE%'^" >> "%LOGFILE%""
 @IF NOT EXIST "%ZIPFILE%" @ECHO LOGERROR %SCRIPTNAME% BACKUPS ^"'%ZIPFILE%' not found^" >> "%LOGFILE%""
 
 @SET ZIPOPTS=
-@SET ZIPFILE=%BACKUPDIR%%VAGRANT%\backups.zip
+@SET ZIPFILE=%BACKUPDIR%%VAGRANTHOST%\guest-backups.zip
 @IF EXIST "%ZIPFILE%" @SET ZIPOPTS=-u
-zip -r -S %ZIPOPTS% "%ZIPFILE%" "backups"
+zip -r -S %ZIPOPTS% "%ZIPFILE%" "guest-backups"
 @IF EXIST "%ZIPFILE%" @ECHO LOGINFO %SCRIPTNAME% BACKUPS ^"completed zipping '%ZIPFILE%'^" >> "%LOGFILE%""
 @IF NOT EXIST "%ZIPFILE%" @ECHO LOGERROR %SCRIPTNAME% BACKUPS ^"'%ZIPFILE%' not found^" >> "%LOGFILE%""
 
 cd "%CURRENTDIR%"
+:ENDCOPYLOCAL
 
-@ECHO LOGCOMPL %SCRIPTNAME% BACKUPS ^"Backup %VAGRANT%^" >> "%LOGFILE%""
+@ECHO LOGCOMPL %SCRIPTNAME% BACKUPS ^"Backup %VAGRANTHOST%^" >> "%LOGFILE%""
