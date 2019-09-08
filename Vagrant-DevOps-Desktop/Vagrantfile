@@ -1,0 +1,136 @@
+# --------------------------------------------------------------------------------
+# Purpose:
+#
+# Requirements:
+# 
+# History:
+#
+# --------------------------------------------------------------------------------
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# --------------------------------------------------------------------------------
+# Declares
+# --------------------------------------------------------------------------------
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Name in Vagrant & VirtualBox
+NAME = "Vagrant-DevOps-Desktop"
+HOSTNAME = "devops-desktop"
+
+# Define tests so it's possible to determine if we are provisioned and or provisioning 
+def provisioned?(provider='virtualbox')
+    File.exists?(File.join(File.dirname(__FILE__),".vagrant/machines/#{NAME}/#{provider}/action_provision"))
+end
+def provisioning?()
+  (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
+end
+
+# --------------------------------------------------------------------------------
+# Prerequisites
+# --------------------------------------------------------------------------------
+
+# unless Vagrant.has_plugin?("vagrant-reload")
+#   puts 'Installing vagrant-reload Plugin...'
+#   system('vagrant plugin install vagrant-reload')
+# end
+# unless Vagrant.has_plugin?("vagrant-proxyconf")
+#   puts 'Installing vagrant-proxyconf Plugin...'
+#   system('vagrant plugin install vagrant-proxyconf')
+# end
+# unless Vagrant.has_plugin?("vagrant-vbguest")
+#   puts 'Installing vagrant-proxyconf Plugin...'
+#   system('vagrant plugin install vagrant-vbguest')
+# end
+
+# --------------------------------------------------------------------------------
+# Provision:
+# --------------------------------------------------------------------------------
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  #BugFix: "centos/7" does't have GuestAdditions installed, requires "vagrant plugin install vagrant-vbguest"
+  config.vm.box = "centos/7"
+  #config.vm.box = "ol7-latest"
+  #config.vm.box_url = "https://yum.oracle.com/boxes/oraclelinux/latest/ol7-latest.box"
+  config.vm.define NAME
+  config.vm.hostname = HOSTNAME # SecFix: hostname different to vm name
+
+  config.vm.box_check_update = false
+  
+  # Must specify :id "ssh" so it's recognised as the vagrant ssh port
+  config.vm.network :forwarded_port, guest: 22, host: 2228, id: "ssh"
+
+  # Internal network for interserver comms
+  config.vm.network "private_network", ip: "192.168.0.8", virtualbox__intnet: true
+
+  # Service port forwarding
+  #config.vm.network "forwarded_port", guest: 1521, host: 1521, id: "oradb"
+  #config.vm.network "forwarded_port", guest: 5500, host: 5500, id: "emconsole"
+  #config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "apex"
+
+  # Mick - testing showed 3G required for reliable oralce memory_target=2G
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+    v.name = NAME
+    # Prevent VirtualBox from interfering with host audio stack
+    #v.customize ["modifyvm", :id, "--audio", "none"]
+  end
+
+  # Proxy configuration from host env - optional
+  # if Vagrant.has_plugin?("vagrant-proxyconf")
+  #   puts "getting Proxy Configuration from Host..."
+  #   if ENV["http_proxy"]
+  #     puts "http_proxy found, adding on guest"
+  #     config.proxy.http = ENV["http_proxy"]
+  #   end
+  #   if ENV["https_proxy"]
+  #     puts "https_proxy found, adding on guest"
+  #     config.proxy.https = ENV["https_proxy"]
+  #   end
+  #   if ENV["no_proxy"]
+  #     config.proxy.no_proxy = ENV["no_proxy"]
+  #   end
+  # end
+
+  # SecFix: After provision, mount purposeful folders, rather than whole vagrant folder
+
+  # backups out
+  config.vm.synced_folder "guest-backups/", "/backups"
+
+  # data in/out
+  config.vm.synced_folder "guest-data/", "/data"
+  
+  # scripts in
+  config.vm.synced_folder "guest-scripts/", "/scripts"
+  
+  # ----------------------------------------
+  # Provision (Initial boot only)
+  # ----------------------------------------
+
+  # Provision - regional settings, must be before database
+  config.vm.provision "shell", path: "provision-scripts/config-region.sh"
+
+  # Provision linux diag and perf utils
+  config.vm.provision "shell", path: "provision-scripts/linux-utils.sh"
+
+  # Provision centos gui desktop and default apps:
+  config.vm.provision "shell", path: "provision-scripts/centos-desktop.sh"
+  
+  # change to GUI desktop requries reload
+  config.vm.provision :reload
+
+  # Providion developer tools
+  config.vm.provision "shell", path: "provision-scripts/centos-desktop-developer-tools.sh"
+
+  # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
+  if provisioned? && !provisioning?
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  end
+end
+
+# BUG: This always shows up:
+#puts "ssh port 2228"

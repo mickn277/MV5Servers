@@ -3,7 +3,7 @@
 echo 'INSTALL: Start'
 
 # get up to date
-yum update -y
+#yum update -y
 
 # run OL Yum configuration
 /usr/bin/ol_yum_configure.sh
