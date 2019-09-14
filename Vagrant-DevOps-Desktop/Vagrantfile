@@ -1,10 +1,13 @@
 # --------------------------------------------------------------------------------
 # Purpose:
+#   Provision CentOS for developer / devops software development with internal 
+#   network to other VM's in group.
 #
 # Requirements:
+#   Check readme for required downloads.
 # 
 # History:
-#
+#   08/09/2019 Mick 277, Wrote Script.
 # --------------------------------------------------------------------------------
 
 # -*- mode: ruby -*-
@@ -33,18 +36,18 @@ end
 # Prerequisites
 # --------------------------------------------------------------------------------
 
-# unless Vagrant.has_plugin?("vagrant-reload")
-#   puts 'Installing vagrant-reload Plugin...'
-#   system('vagrant plugin install vagrant-reload')
-# end
-# unless Vagrant.has_plugin?("vagrant-proxyconf")
-#   puts 'Installing vagrant-proxyconf Plugin...'
-#   system('vagrant plugin install vagrant-proxyconf')
-# end
-# unless Vagrant.has_plugin?("vagrant-vbguest")
-#   puts 'Installing vagrant-proxyconf Plugin...'
-#   system('vagrant plugin install vagrant-vbguest')
-# end
+unless Vagrant.has_plugin?("vagrant-reload")
+  puts 'Installing vagrant-reload Plugin...'
+  system('vagrant plugin install vagrant-reload')
+end
+unless Vagrant.has_plugin?("vagrant-proxyconf")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-proxyconf')
+end
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  puts 'Installing vagrant-proxyconf Plugin...'
+  system('vagrant plugin install vagrant-vbguest')
+end
 
 # --------------------------------------------------------------------------------
 # Provision:
@@ -72,12 +75,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "apex"
 
   # Mick - testing showed 3G required for reliable oralce memory_target=2G
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
-    v.cpus = 2
-    v.name = NAME
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+    vb.cpus = 2
+    vb.name = NAME
     # Prevent VirtualBox from interfering with host audio stack
     #v.customize ["modifyvm", :id, "--audio", "none"]
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
   end
 
   # Proxy configuration from host env - optional
@@ -124,7 +128,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :reload
 
   # Providion developer tools
-  config.vm.provision "shell", path: "provision-scripts/centos-desktop-developer-tools.sh"
+  config.vm.provision "shell", path: "provision-scripts/centos-desktop-developer.sh"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned? && !provisioning?
