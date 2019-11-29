@@ -1,0 +1,13 @@
+#Ignore 
+/.vagrant/
+/downloads/*
+!/downloads/README.md
+/guest-backups/*
+!/guest-backups/README.md
+/guest-data/*
+!/guest-data/README.md
+/guest-scripts/*
+!/guest-scripts/README.md
+*.rpm
+*.zip
+*.log

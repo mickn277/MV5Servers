@@ -1,0 +1,1 @@
+mounted as /data in guest vm's (not available without guest additions)
