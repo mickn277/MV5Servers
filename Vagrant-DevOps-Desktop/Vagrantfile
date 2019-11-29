@@ -64,7 +64,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
   
   # Must specify :id "ssh" so it's recognised as the vagrant ssh port
-  config.vm.network :forwarded_port, guest: 22, host: 2228, id: "ssh"
+  config.vm.network :forwarded_port, guest: 22, host: 2221, id: "ssh"
 
   # Internal network for interserver comms
   config.vm.network "private_network", ip: "192.168.0.8", virtualbox__intnet: true
