@@ -16,15 +16,13 @@
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
-VAGRANT_EXPERIMENTAL="typed_triggers"
 
-# Name in Vagrant & VirtualBox
-NAME = "Vagrant-Docker-Host"
-HOSTNAME = "dockerhost"
+NAME = "Vagrant-Nginx"
+HOSTNAME = "nginx"
 
-#Define tests to determine if we are provisioned and or provisioning 
+# Define tests to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
-  File.exists?(File.join(File.dirname(__FILE__),".vagrant/machines/#{NAME}/#{provider}/action_provision"))
+    File.exists?(File.join(File.dirname(__FILE__),".vagrant/machines/#{NAME}/#{provider}/action_provision"))
 end
 def provisioning?()
   (ARGV.include?("reload") && ARGV.include?("--provision")) || ARGV.include?("provision")
@@ -49,7 +47,7 @@ unless Vagrant.has_plugin?("vagrant-vbguest")
 end
 
 # --------------------------------------------------------------------------------
-# Main
+# Provision:
 # --------------------------------------------------------------------------------
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -61,24 +59,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
 
   # Must specify :id "ssh" so it's recognised as the vagrant ssh port
-  config.vm.network :forwarded_port, guest: 22, host: 2223, id: "ssh"
-
-  # TODO: docker nginx test image
-  config.vm.network "forwarded_port", guest: 8080, host: 8081, id: "docker-apex"
+  config.vm.network :forwarded_port, guest: 22, host: 2226, id: "ssh"
 
   # Internal network for interserver comms
-  config.vm.network "private_network", ip: "192.168.0.3", virtualbox__intnet: true
+  config.vm.network "private_network", ip: "192.168.0.6", virtualbox__intnet: true
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = 4096
-    vb.cpus = 4
-    # BugFix: Name required here also
-    vb.name = NAME
-    # Prevent VirtualBox from interfering with host audio stack
-    vb.customize ["modifyvm", :id, "--audio", "none"]
-    # USB, Serial disabled by default
+  # Database port forwarding
+  config.vm.network "forwarded_port", guest: 8080, host: 8082, id: "nginx"
+
+  config.vm.provider :virtualbox do |vb, override|
+      vb.name = NAME
+      vb.memory = 2048
+      vb.cpus = 1
+      # Prevent VirtualBox from interfering with host audio stack
+      vb.customize ["modifyvm", :id, "--audio", "none"]
+      override.vm.box_download_checksum_type = "sha256"
+      override.vm.box_download_checksum = "a0823c8c1d48024e44627e5fbfc55cb2c14bd8997aa002fc037202e7ec543e2b"
+      override.vm.box_url = "https://cloud.centos.org/centos/8/vagrant/x86_64/images/CentOS-8-Vagrant-8.0.1905-1.x86_64.vagrant-virtualbox.box"
   end
-
+  
   # Proxy configuration from host env - optional
   if Vagrant.has_plugin?("vagrant-proxyconf")
     puts "getting Proxy Configuration from Host..."
@@ -91,11 +90,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.proxy.https = ENV["https_proxy"]
     end
     if ENV["no_proxy"]
-      # Override host no_proxy with one specific for environment
-      config.proxy.no_proxy = "NO_PROXY=localhost,127.0.0.0/8,10.0.0.0/24,192.168.0.0/16,172.16.0.0/12"
+      config.proxy.no_proxy = ENV["no_proxy"]
     end
   end
-
+  
   # SecFix: After provision, mount purposeful folders, rather than whole vagrant folder
 
   # backups out
@@ -106,18 +104,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # scripts in
   config.vm.synced_folder "guest-scripts/", "/scripts"
-  
+
   # ----------------------------------------
   # Provision (Initial boot only)
   # ----------------------------------------
-  
+
   config.vm.provision :shell, path: "provision-scripts/config-region.sh"
 
   config.vm.provision :shell, path: "provision-scripts/linux-utils.sh"
 
-  config.vm.provision :shell, path: "provision-scripts/install-docker.sh"
-
-  #config.vm.provision :shell, path: "provision-scripts/enable-user-namespaces.sh"
+  config.vm.provision :shell, path: "provision-scripts/install-nginx.sh"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?

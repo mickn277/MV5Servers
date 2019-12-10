@@ -1,4 +1,9 @@
-# vagrant-docker-host
+# Vagrant-DevOps-Desktop
+
+
+## TODO: Install devops user with randomly generated password ...
+
+## Delete all below here <>
 
 Provides a CentOS 7 host running Docker CE (Community Edition). 
 Installs CentOS, Docker CE and tests the finished image with `docker run hello-world`.

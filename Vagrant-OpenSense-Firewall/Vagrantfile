@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box_check_update = false
 
-  config.vm.network :forwarded_port, guest: 22, host: 2224, id: "ssh"
+  #config.vm.network :forwarded_port, guest: 22, host: 2224, id: "ssh"
 
   # sepecial configurations for bsd shell / opnsense stuff
   config.ssh.sudo_command = "%c"
@@ -39,8 +39,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.username = "root"
 
   # Internal network for interserver comms
+  # TODO: Must be setup in OPNSense Web GUI
   #config.vm.network "private_network", ip: "192.168.0.1", virtualbox__intnet: true
-
+  
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = 1024
     vb.cpus = 1
@@ -48,19 +49,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--audio", "none"] # Prevent VirtualBox from interfering with host audio stack
     # USB, Serial disabled by default
 
-    # swap the networks around
-    # since opnsense expects nic1 (first) to be LAN, lets make it intnet
+    # opnsense expects nic1 (first) to be LAN, lets make it intnet, so swap the networks around
     # nic2 is wan, so we are doing nat ( routed to the host )
     vb.customize ['modifyvm', :id, '--nic1', 'intnet', '--nic2', 'nat'] 
+
     # Forward the ssh port that was detected during boot.  This must be unique and not conflict with other VM's running on the system.
     vb.customize ['modifyvm', :id, '--natpf2', "ssh,tcp,127.0.0.1,2224,,22" ]  
     # Forward the ports to the WebGUI since we use a nat network
     vb.customize ['modifyvm', :id, '--natpf2', "https,tcp,127.0.0.1,10443,,443" ]  
-
-    #vb.customize ['dhcpserver', 'remove', '--netname', 'intnet' ] 
-    #CMD /C """C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"" dhcpserver remove --netname intnet"
-    #VBoxManage dhcpserver remove --netname intnet
-    #VBoxManage dhcpserver add --netname intnet --ip 10.0.2.0 --netmask 255.255.255.0 --lowerip 10.0.02.101 --upperip 10.0.2.254 --
   end 
   
   #Sync'd folders not available, no guest additions installed
@@ -76,4 +72,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 end
 
-puts 'Access via URL: https://localhost:10443/'
+#TODO: This occurs at the start, rather than the end of the script!
+#puts 'Access via URL: https://localhost:10443/'
