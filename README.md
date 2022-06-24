@@ -1,8 +1,8 @@
-# Marvin V5 some change here
+# MV5Servers
 
 ### Overview
 
-This is a cluster of vagrant virtualbox servers that will provision individually.  They are for learning, are a work in progress and probably will never be finished.
+This is a cluster of servers on vagrant virtualbox that will provision individually.  They are for learning, are a work in progress and probably will never be finished.
 
 ### Learnings
 * Vagrant ssh ports that don't conflict
