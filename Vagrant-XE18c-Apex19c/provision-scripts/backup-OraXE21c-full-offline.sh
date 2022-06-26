@@ -17,11 +17,10 @@
 export ORAENV_ASK="NO"
 export ORACLE_SID=XE
 export ORACLE_BASE=/opt/oracle
-export ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
+export ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib
 export PATH=$PATH:$ORACLE_HOME/bin
 
-#BINDIR=/vagrant/mw-scripts
 EMAILTO=#EMAILTO#
 BACKUPDIR=/backups
 LOGFILE="$BACKUPDIR/rman-backup-$ORACLE_SID-`date '+%Y%m%d-%H%M%S'`.log"
@@ -103,14 +102,3 @@ fi
 find `dirname ${LOGFILE}` -name '*.log' -ctime +30 -exec rm -f {} \;
 
 exit 0
-
-
-
-
-
-
-
-
-
-
-

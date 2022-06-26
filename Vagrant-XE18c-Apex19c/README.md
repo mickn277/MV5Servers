@@ -1,5 +1,5 @@
-# Oracle Apex19c XE18c
-A vagrant box that provisions Oracle Database XE 18.4 with Oracle Application Express 19.1 (APEX) automatically, using Vagrant, an Oracle Linux 7 box and a shell script.
+# Oracle Apex22.1 XE21c
+A vagrant box that provisions Oracle Database XE 21c with Oracle Application Express 19.1 (APEX) automatically, using Vagrant, an Oracle Linux 8 box and a shell script.
 
 ## Prerequisites
 1. Install [Oracle VM VirtualBox](https://www.virtualbox.org/wiki/Downloads)
@@ -7,9 +7,9 @@ A vagrant box that provisions Oracle Database XE 18.4 with Oracle Application Ex
 3. Oracle account for downloads
 
 ## Getting started
-1. Clone this repository `git clone https://github.com/n2779510/MarvinV5`
-2. Change into the `Vagrant-OracleApex19c-XE18c` folder
-3. Download the Oracle Database XE 18.4 installation rpm file from OTN into ./downloads/ folder - first time only:
+1. Clone this repository `git clone https://github.com/n2779510/MV5Server`
+2. Change into the `Vagrant-OracleApex22.1-XE21c` folder
+3. Download the Oracle Database XE 21c installation rpm file from OTN into ./downloads/ folder - first time only:
 [https://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html](https://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html)
 4. Download the Oracle APEX into this folder - first time only:
 [https://www.oracle.com/technetwork/developer-tools/apex/downloads/index.html](https://www.oracle.com/technetwork/developer-tools/apex/downloads/index.html)

@@ -21,6 +21,8 @@
 #    scoter     03/19/19 - Creation
 #
 
+echo 'INSTALL APEX: Start'
+
 . /home/oracle/.bashrc 
 
 export ORACLE_PWD=`cat /vagrant/apex-pwd.log`
@@ -29,12 +31,12 @@ echo "export ORACLE_PDB=$ORACLE_PDB" >> /home/oracle/.bashrc
 
 # Install new apex release
 cd $ORACLE_HOME
-APEX_INSTALL=`ls /vagrant/downloads/apex_1*.*.zip |tail -1`
+APEX_INSTALL=`ls /vagrant/downloads/apex_*.*.zip |tail -1`
 unzip $APEX_INSTALL
 chown -R oracle:oinstall $ORACLE_HOME/apex
 cd -
 
-echo 'INSTALLER: Updated APEX extracted to the ORACLE_HOME'
+echo 'INSTALL APEX: Updated APEX extracted to the ORACLE_HOME'
 
 # Prepare APEX tablespaces
 su -l oracle -c "sqlplus / as sysdba <<EOF
@@ -46,7 +48,7 @@ su -l oracle -c "sqlplus / as sysdba <<EOF
 	exit;
 EOF"
 
-echo 'INSTALLER: APEX tablespaces created'
+echo 'INSTALL APEX: APEX tablespaces created'
 
 # Install APEX into the PDB Oracle Database
 su -l oracle -c "cd $ORACLE_HOME/apex; sqlplus / as sysdba <<EOF
@@ -55,7 +57,7 @@ su -l oracle -c "cd $ORACLE_HOME/apex; sqlplus / as sysdba <<EOF
 	exit;
 EOF"
 
-echo 'INSTALLER: Oracle APEX Installation completed'
+echo 'INSTALL APEX: Oracle APEX Installation completed'
 
 # unlock APEX_PUBLIC_USER
 su -l oracle -c "cd $ORACLE_HOME/apex; sqlplus / as sysdba <<EOF
@@ -71,7 +73,7 @@ su -l oracle -c "sqlplus / as sysdba <<EOF
 	    apex_util.set_security_group_id( 10 );
 	    apex_util.create_user(
 	        p_user_name => 'ADMIN',
-	        p_email_address => 'your@emailaddress.com',
+	        p_email_address => 'mick277@yandex.com',
 	        p_web_password => '${ORACLE_PWD}',
 	        p_developer_privs => 'ADMIN' );
 	    apex_util.set_security_group_id( null );
@@ -113,4 +115,4 @@ EOF
 su -l oracle -c "sqlplus / as sysdba @/tmp/apex-ace.sql"
 rm -f /tmp/apex-ace.sql
 
-echo 'INSTALLER: Oracle APEX Configuration completed'
+echo 'INSTALL APEX: Completed'

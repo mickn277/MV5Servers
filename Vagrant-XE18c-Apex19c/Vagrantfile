@@ -55,7 +55,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 # Name in Vagrant & VirtualBox
-NAME = "Vagrant-XE18c-Apex19c"
+NAME = "Vagrant-XE21c-Apex22"
 
 # Define tests so it's possible to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
@@ -81,7 +81,7 @@ end
 
 # Tests for provisioning prerequisites ...
 if (not provisioned?) || provisioning?
-  unless !Dir.glob('./downloads/oracle-database-xe-18c*.rpm').empty?
+  unless !Dir.glob('./downloads/oracle-database-xe-21c*.rpm').empty?
     puts 'downloaded database rpm not found'
     exit
   end
@@ -110,11 +110,11 @@ else
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ol7-latest"
-  config.vm.box_url = "https://yum.oracle.com/boxes/oraclelinux/latest/ol7-latest.box"
+  config.vm.box = "oraclebase/oracle-8"
+  config.vm.box_url = "https://yum.oracle.com/boxes/oraclelinux/latest/ol8-latest.box"
   config.vm.define NAME
   config.vm.hostname = "oraapex" # SecFix: hostname different to vm name
-
+  config.vm.boot_timeout = 600 # Default=300
   config.vm.box_check_update = false
   
   # Must specify :id "ssh" so it's recognised as the vagrant ssh port
@@ -135,6 +135,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.name = NAME
     # Prevent VirtualBox from interfering with host audio stack
     v.customize ["modifyvm", :id, "--audio", "none"]
+    # DEBUG Endable GUI for debugging:
+    v.gui = true
   end
 
   # Proxy configuration from host env - optional
@@ -194,7 +196,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "provision-scripts/ords.sh"
 
   # Provision Oracle tuning, backups and other configs
-  config.vm.provision "shell", path: "provision-scripts/database-xe18c-tuning-configs.sh"
+  config.vm.provision "shell", path: "provision-scripts/database-xe-tuning-configs.sh"
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   if provisioned?

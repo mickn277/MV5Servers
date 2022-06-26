@@ -2,10 +2,10 @@
 
 # --------------------------------------------------------------------------------
 # Purpose:
-#  MW CUSTOM: Customisatons to make Oracle XE 18c work better.
+#  MW CUSTOM: Customisatons to make Oracle XE 21c work better.
 #
 # Requirements:
-#  VM must have 3GB memory, otherwise oracle XE 18c may fail to start.
+#  VM must have 3GB memory, otherwise oracle XE 21c may fail to start.
 #
 # History:
 #  05/07/2019 - Mick Wells, Wrote Script
@@ -16,7 +16,7 @@ echo 'DATABASE-CONFIG Start'
 echo 'DATABASE-CONFIG Apply Tuning'
 # set environment variables
 export ORACLE_BASE=/opt/oracle
-export ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
+export ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
 export ORACLE_SID=XE
 export PATH=$PATH:$ORACLE_HOME/bin
 

@@ -23,6 +23,8 @@
 
 . /home/oracle/.bashrc 
 
+echo "INSTALL ORDS: Start"
+
 export ORACLE_PWD=`cat /vagrant/apex-pwd.log`
 rm -f /vagrant/apex-pwd.log
 
@@ -31,11 +33,11 @@ mkdir $ORACLE_BASE/ords
 export ORDS_HOME=$ORACLE_BASE/ords
 echo "export ORDS_HOME=$ORACLE_BASE/ords" >> /home/oracle/.bashrc
 cd  $ORDS_HOME
-ORDS_INSTALL=`ls /vagrant/downloads/ords[_-]1*.*.zip |tail -1`
+ORDS_INSTALL=`ls /vagrant/downloads/ords-*.zip |tail -1`
 unzip $ORDS_INSTALL
 chown -R oracle:oinstall $ORDS_HOME
 
-echo 'INSTALLER: Oracle Rest Data Services extracted to ORACLE_BASE'
+echo 'INSTALL ORDS: Oracle Rest Data Services extracted to ORACLE_BASE'
 
 # Create config directory
 su -l oracle -c "$ORACLE_HOME/jdk/bin/java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config"
@@ -90,19 +92,19 @@ EOF
 # Fix permissions on ORDS standalone directories
 chown -R oracle:oinstall $ORACLE_BASE/ords
 
-echo 'INSTALLER: Oracle Rest Data Services configuration created'
+echo 'INSTALL ORDS: Oracle Rest Data Services configuration created'
 
 # Create and configure ORDS Database Users/Objects
 su -l oracle -c "$ORACLE_HOME/jdk/bin/java -jar $ORDS_HOME/ords.war setup --parameterFile $ORDS_HOME/params/ords_params.properties --silent"
 
-echo 'INSTALLER: Oracle Rest Data Services installation completed'
+echo 'INSTALL ORDS: Oracle Rest Data Services installation completed'
 
 # Start ORDS service
 export JAVA_HOME=$ORACLE_HOME/jdk/bin
 cat > /etc/systemd/system/ords.service << EOF
 [Unit]
 Description=Start Oracle REST Data Services
-After=oracle-xe-18c.service
+After=oracle-xe-21c.service
 
 [Service]
 User=oracle
@@ -114,14 +116,14 @@ SyslogIdentifier=ords
 WantedBy=multi-user.target
 EOF
 systemctl enable --now ords
-echo 'INSTALLER: Oracle Rest Data Services started'
+echo 'INSTALL ORDS: Oracle Rest Data Services started'
 
 echo ""
-echo "INSTALLER: APEX/ORDS Installation Completed";
-echo "INSTALLER: You can access APEX by your Host Operating System at following URL:";
-echo "INSTALLER: http://localhost:8080/ords/";
-echo "INSTALLER: Access granted with:";
-echo "INSTALLER: Workspace: internal";
-echo "INSTALLER: Username:  admin";
-echo "INSTALLER: Password:  ${ORACLE_PWD}";
-echo ""
+echo "INSTALL ORDS: APEX/ORDS Installation Completed";
+echo "INSTALL ORDS: You can access APEX by your Host Operating System at following URL:";
+echo "INSTALL ORDS: http://localhost:8080/ords/";
+echo "INSTALL ORDS: Access granted with:";
+echo "INSTALL ORDS: Workspace: internal";
+echo "INSTALL ORDS: Username:  admin";
+echo "INSTALL ORDS: Password:  ${ORACLE_PWD}";
+echo "INSTALL ORDS: Complete"
