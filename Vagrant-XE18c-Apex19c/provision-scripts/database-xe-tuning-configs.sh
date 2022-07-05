@@ -8,7 +8,7 @@
 #  VM must have 3GB memory, otherwise oracle XE 21c may fail to start.
 #
 # History:
-#  05/07/2019 - Mick Wells, Wrote Script
+#  05/07/2019 - Mick277@yandex.com, Wrote Script
 # --------------------------------------------------------------------------------
 
 echo 'DATABASE-CONFIG Start'
