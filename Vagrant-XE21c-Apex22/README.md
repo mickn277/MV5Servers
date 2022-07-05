@@ -35,6 +35,14 @@ A `clean` vagrant box that provisions Oracle Database XE 21c with ApEx (Oracle A
 2. Change into the `Vagrant-Oracle21c-Apex22` folder
 3. Delete the `.vagrant` folder.  This makes vagrant think it's clean again
 
+### Hangs at `SSH auth method: private key`
+* Machine hung on what looks disk or network related.  
+* Fixed by removing SSD Config on low spec laptop.
+* Tested working fine with all optimisations on AMD 3700x 32GB ram with M.2 flash drive.
+
+### Errors from Virtualbox on machine with only two phycal cores, but four threads.  
+* Changed v.cpus = 3 to 2 to fix.
+
 ## Connecting to Oracle
 
 ### Configuration
