@@ -26,7 +26,7 @@ yum remove docker docker-client docker-client-latest docker-common \
 
 echo 'INSTALL DOCKER - Install required prerequisites'
 yum install --assumeyes yum-utils device-mapper-persistent-data lvm2
-# Mick: lvm2 is probably already installed
+# lvm2 is probably already installed
 
 echo 'INSTALL DOCKER - Install stable repository.'
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
