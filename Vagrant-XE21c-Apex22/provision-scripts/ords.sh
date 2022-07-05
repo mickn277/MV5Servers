@@ -96,7 +96,7 @@ EOF"
 su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.static.path ${ORACLE_HOME}/apex/images"
 su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.mode TRUE"
 su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.http.port 8080"
-su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.use.https false"
+#su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.use.https false"
 
 
 # Fix permissions on ORDS standalone directories
