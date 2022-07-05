@@ -6,6 +6,7 @@
 # History:
 #   07/02/2019 Mick277@yandex.com, Wrote Script.  ORDS zip.
 #   20/06/2022 Mick277@yandex.com, Upgraded for ORDS 22.x from RPM.  Full rewrite.
+#   05/07/2022 Mick277@yandex.com, Fixed install bugs.
 # Docs:
 #   https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/22.1/ordig/installing-and-configuring-oracle-rest-data-services.html
 #
@@ -28,21 +29,23 @@ export ORACLE_PWD=`cat /vagrant/apex-pwd.log`
 # Install ORDS
 export ORACLE_BASE=/opt/oracle
 export ORDS_HOME=$ORACLE_BASE/ords
+export ORDS_CONFIG=$ORACLE_BASE/ords-conf
+ORACLE_HOME=$(find /opt/oracle -name dbhomeXE | tail -1); export ORACLE_HOME
+
 mkdir -p $ORDS_HOME
 cd $ORDS_HOME
-INSTALL_DOWNLOAD_PATH=`ls /vagrant/downloads/ords*.el8.noarch.rpm |tail -1`
+INSTALL_DOWNLOAD_PATH=$(ls /vagrant/downloads/ords*.el8.noarch.rpm | tail -1)
 yum -y localinstall $INSTALL_DOWNLOAD_PATH
 chown -R oracle:oinstall $ORDS_HOME
 
 # Create config directory
-export ORDS_CONFIG=$ORACLE_BASE/ords-conf
-#su -l oracle -c "mkdir -p $ORDS_CONFIG/ords/standalone"
-#su -l oracle -c "mkdir -p $ORDS_CONFIG/ords/doc_root"
 su -l oracle -c "mkdir -p $ORDS_CONFIG/logs"
-#su -l oracle -c "mkdir -p $ORDS_CONFIG/params"
 
 echo "export ORDS_HOME=$ORACLE_BASE/ords" >> /home/oracle/.bashrc
 echo "export ORDS_CONFIG=$ORACLE_BASE/ords-conf" >> /home/oracle/.bashrc
+
+# Fix permissions on ORDS standalone directories
+chown -R oracle:oinstall $ORACLE_BASE/ords-conf
 
 # cat > $ORDS_HOME/params/ords_params.properties << EOF
 # db.hostname=localhost
@@ -72,8 +75,6 @@ echo "export ORDS_CONFIG=$ORACLE_BASE/ords-conf" >> /home/oracle/.bashrc
 # user.tablespace.temp=TEMP
 # EOF
 
-#su -l oracle -c "${ORDS_HOME}/bin/ords --config ${ORDS_CONFIG} install --legacy-config ${ORDS_CONFIG} --log-folder /vagrant/ords-install.log --password-stdin <<EOF ${ORACLE_PWD}EOF"
-
 su -l oracle -c "${ORDS_HOME}/bin/ords --config ${ORDS_CONFIG} install \
     --log-folder ${ORDS_CONFIG}/logs \
     --admin-user SYS \
@@ -98,26 +99,7 @@ su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.mode TRUE"
 su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.http.port 8080"
 #su -l oracle -c "ords --config ${ORDS_CONFIG} config set standalone.use.https false"
 
-
-# Fix permissions on ORDS standalone directories
-chown -R oracle:oinstall $ORACLE_BASE/ords-conf
-
-echo 'INSTALL ORDS: Oracle Rest Data Services configuration created'
-
-# Create and configure ORDS Database Users/Objects
-#su -l oracle -c "$ORACLE_HOME/jdk/bin/java -jar $ORDS_HOME/ords.war setup --parameterFile $ORDS_HOME/params/ords_params.properties --silent"
-#su -l oracle -c "ords --config $ORACLE_BASE/ords-conf install --admin-user admin --log-folder $ORACLE_BASE/ords-conf/logs --password-stdin < /vagrant/apex-pwd.log"
-#su -l oracle -c "ords --parameterFile $ORACLE_BASE/ords-conf/params/ords_params.properties --saveParameters"
-
-#ords --config ${ORDS_CONFIG} install
-
-# $JAVA_HOME\bin\java -jar $ORDS_HOME\ords.war setup --parameterFile $ORACLE_BASE/ords-conf/params/ords_params.properties --saveParameters 
-#$JAVA_HOME/bin/java -jar $ORDS_HOME/ords.war setup --parameterFile $ORACLE_BASE/ords-conf/params/ords_params.properties --saveParameters
-
-
-# ${ORDS_HOME}/bin/ords --config ${ORDS_CONFIG} serve
-
-echo 'INSTALL ORDS: Oracle Rest Data Services installation completed'
+echo 'INSTALL ORDS: Oracle Rest Data Services configuration and installation completed'
 
 # Start ORDS service
 cat > /etc/systemd/system/ords.service << EOF
