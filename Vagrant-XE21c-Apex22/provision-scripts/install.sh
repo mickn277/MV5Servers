@@ -4,7 +4,7 @@
 # Purpose:
 #   OS Installs for Oracle, Apex and Ords.
 # History:
-#   20/06/2022 - Mick277, Wrote Script.
+#   20/06/2022 - Mick277@yandex.com, Wrote Script.
 # Docs:
 #   https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/22.1/ordig/installing-and-configuring-oracle-rest-data-services.html
 # --------------------------------------------------------------------------------

@@ -7,6 +7,8 @@
 #   07/02/2019 Mick277@yandex.com, Wrote Script.
 # Docs:
 # 	??
+# TODO: 
+# 	Find and replace noreply@replace.com with correct email address.
 # --------------------------------------------------------------------------------
 
 echo 'INSTALL APEX: Start'
@@ -60,7 +62,7 @@ begin
 	apex_util.set_security_group_id( 10 );
 	apex_util.create_user(
 		p_user_name => 'ADMIN',
-		p_email_address => 'mick277@yandex.com',
+		p_email_address => 'noreply@replace.com',
 		p_web_password => '${ORACLE_PWD}',
 		p_developer_privs => 'ADMIN' );
 	apex_util.set_security_group_id( null );

@@ -2,8 +2,8 @@
 # Purpose:
 #   Provision Oracle Apex datbase server with ORDS.
 # History:
-#   Mick277@yandex: Wrote Script.
-#   24/06/2022 Mick: Upgraded to Oracle Linux 8, Oracle XE 21c, Apex 22.1.
+#   20/06/2022 Mick277@yandex.com: Wrote Script.
+#   24/06/2022 Mick277@yandex.com: Upgraded to Oracle Linux 8, Oracle XE 21c, Apex 22.1.
 #     Added SSD config and HTTPS port forward.
 # --------------------------------------------------------------------------------
 
@@ -92,10 +92,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 8080, host: 8080, id: "apex_http"
   config.vm.network "forwarded_port", guest: 8443, host: 8443, id: "apex_https"
 
-  # Mick - testing showed 3G required for reliable oralce memory_target=2G
+  # Mick277@yandex.com: Testing showed 3G required for reliable oralce memory_target=2G
   config.vm.provider "virtualbox" do |v|
     v.memory = 3072
-    v.cpus = 2  # Default=3, changed for system with 2 CPU Cores.
+    v.cpus = 3  # Default=3, change to 2 for low spec machine.
     v.name = NAME
     # Prevent VirtualBox from interfering with host audio stack
     v.customize ["modifyvm", :id, "--audio", "none"] 
@@ -170,7 +170,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # SecFix: Don't map the root of vagrant when provisioned, the path leads to the private keys etc.
   # DEBUG: Comment out to keep /vagrant scripts mounted
-#  if provisioned?
-#    config.vm.synced_folder ".", "/vagrant", disabled: true
-#  end
+  if provisioned?
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  end
 end
