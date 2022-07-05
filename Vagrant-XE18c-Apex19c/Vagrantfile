@@ -55,7 +55,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 # Name in Vagrant & VirtualBox
-NAME = "Vagrant-XE21c-Apex22"
+NAME = "Vagrant-XE18c-Apex19c"
 
 # Define tests so it's possible to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
