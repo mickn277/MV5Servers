@@ -7,7 +7,7 @@ A `clean` vagrant box that provisions Oracle Database XE 21c with ApEx (Oracle A
 3. Oracle account for downloads
 
 ## Getting started - Download Requirements
-1. Clone this repository `git clone https://github.com/n2779510/MV5Server`
+1. Clone this repository `git clone https://github.com/n2779510/MV5Servers`
 2. Change into the `Vagrant-Oracle21c-Apex22` folder
 3. Download the Oracle Database XE 21c installation rpm file from OTN into ./downloads/ folder - first time only:
 [https://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html](https://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html)
