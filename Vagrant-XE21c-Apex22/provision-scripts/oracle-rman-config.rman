@@ -1,0 +1,6 @@
+configure retention policy to redundancy 3;
+configure channel device type disk format '/backups/XE/%U' MAXPIECESIZE 10000M maxopenfiles 16;
+configure controlfile autobackup on;
+configure controlfile autobackup format for device type disk to '/backups/XE/%F';
+configure snapshot controlfile name to '/backups/XE/snapcf_XE.f';
+show all;
