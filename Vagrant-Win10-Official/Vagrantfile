@@ -18,7 +18,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 # Name in Vagrant & VirtualBox
 NAME = "Vagrant-Win10-Official"
-HOSTNAME = "devops-desktop"
+HOSTNAME = "MSEDGEWIN10" # Win10-official
 
 # Define tests so it's possible to determine if we are provisioned and or provisioning 
 def provisioned?(provider='virtualbox')
@@ -42,16 +42,6 @@ unless Vagrant.has_plugin?("vagrant-vbguest")
   system('vagrant plugin install vagrant-vbguest')
 end
 
-# # Tests for provisioning prerequisites ...
-# if (not provisioned?) || provisioning?
-#   unless Dir.glob(ENV['USERPROFILE'] + '\.vagrant.d\boxes\Win10-official').exist?
-#     puts 'Win10-official not found.  See: README.md to configure'
-#     exit
-#   end
-# else
-#   puts 'provisioned and not provisioning, skipping provisioning checks ...'
-# end
-
 # get host time zone for setting VM time zone, if possible
 # can override in env section below
 offset_sec = Time.now.gmt_offset
@@ -71,61 +61,64 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define NAME
   config.vm.hostname = HOSTNAME # SecFix: hostname different to vm name
   config.vm.guest = :windows
-  config.vm.communicator = ENV['communicator'] || "winrm"
+  config.vm.communicator = "winrm" # ENV['communicator'] || "winrm"
   config.winrm.username = "IEUser"
   config.winrm.password = "Passw0rd!"
-  config.vm.boot_timeout = 600 # Default=300
+  config.vm.boot_timeout = 800 # Default=300
   config.vm.graceful_halt_timeout = 600
   config.vm.box_check_update = false
-  # Configuring
-  config.ssh.username="IEUser"
-  config.ssh.password="Passw0rd!"
-  config.ssh.insert_key = false
-  config.ssh.sudo_command = ''
-	config.ssh.shell = 'sh -l'
 
   # Internal network for interserver comms
-  config.vm.network "private_network", ip: "192.168.0.9", virtualbox__intnet: true
+  # Bug: Comment this out as it causes provisioning to fail, WinRM fails as new networks default to public.
+  
+  #config.vm.network "private_network", ip: "192.168.0.9", virtualbox__intnet: true
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # Create a forwarded port mapping which allows access to a specific ports
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network :forwarded_port, guest: 3389, host: 3389
-  #config.vm.network :forwarded_port, guest: 3389, host: 3389
-  config.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
-  config.vm.network :forwarded_port, guest: 5986, host: 5986, id: "winrm-ssl", auto_correct: true
+  config.vm.network :forwarded_port, guest: 22, host: 2229, id: "ssh"
+  config.vm.network :forwarded_port, guest: 3389, host: 3329, id: "rdp"
+  config.vm.network :forwarded_port, guest: 5985, host: 5829, id: "winrm", auto_correct: true
+  config.vm.network :forwarded_port, guest: 5986, host: 5929, id: "winrm-ssl"
 
   # Mick277@yandex.com: Testing showed 3G required for reliable oralce memory_target=2G
   config.vm.provider "virtualbox" do |v|
-    v.memory = 2048 # Min recommended
-    v.cpus = 2
+    v.memory = 4096 # Min recommended 4096
+    v.cpus = 2 # Min recommended 2
     v.name = NAME
-    # Prevent VirtualBox from interfering with host audio stack
+    # Prevent VirtualBox from interfering with host audio
     v.customize ["modifyvm", :id, "--audio", "none"] 
-    # Fix VirtualBox errors.  vram was 8MB VBoxVGA
+    # 48MB vram, VBoxSVGA Minimum recommended for Win 10
     v.customize ["modifyvm", :id, "--vram", "48"]
-    v.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+    v.customize ["modifyvm", :id, "--graphicscontroller", "VBoxSVGA"]
+    v.customize ['setextradata', :id, 'GUI/ScaleFactor', '1.00']
+    v.customize ['modifyvm', :id, '--clipboard', 'bidirectional']   
     # Configure storage for SSD.  BugFix: This causes VM to hang on low spec Asus X53E Laptop
-#    v.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', '0', '--nonrotational', 'on']
-#    v.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', '1', '--nonrotational', 'on']
+    #v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', '0', '--nonrotational', 'on']
     # DEBUG: Comment in to enable GUI:
-    v.gui = true
+    #v.gui = true
   end
+  
+  # Enable-PSRemoting -Force
 
-  # Enabling RDP & WINRM:
-  config.vm.provision "shell",
-    binary: true,
-    privileged: false,
-    inline: <<-SHELL
-    # Enable RDP for IEUser
-		reg add "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
-    netsh advfirewall firewall set rule group="remote desktop" new enable=yes
-    net localgroup "remote desktop users" IEUser /add
-    # winrm - Switch to private network
-    /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -InputFormat None -NoProfile -ExecutionPolicy Bypass -Command '$networkListManager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]"{DCB00C01-570F-4A9B-8D69-199FDBA5723B}")) ; $connections = $networkListManager.GetNetworkConnections() ; $connections | % {$_.GetNetwork().SetCategory(1)}'
-		sc config winrm start= auto
-		cmd /C "winrm quickconfig -q"
-		exit
-  SHELL
+# Enabling RDP & WINRM:
+# config.vm.provision "shell",
+#   binary: true,
+#   privileged: false,
+#   inline: <<-SHELL
+#   # Enable RDP for IEUser
+# 	reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+#   netsh advfirewall firewall set rule group="remote desktop" new enable=yes
+#   net localgroup "remote desktop users" IEUser /add
+# SHELL
+
+  # winrm - Switch to private network
+  # config.vm.provision "shell",
+  #   binary: true,
+  #   privileged: false,
+  #   inline: <<-SHELL
+  #   /cygdrive/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -InputFormat None -NoProfile -ExecutionPolicy Bypass -Command '$networkListManager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]"{DCB00C01-570F-4A9B-8D69-199FDBA5723B}")) ; $connections = $networkListManager.GetNetworkConnections() ; $connections | % {$_.GetNetwork().SetCategory(1)}'
+	# 	sc config winrm start= auto
+	# 	cmd /C "winrm quickconfig -q"
+	# 	exit
+  # SHELL
 end
