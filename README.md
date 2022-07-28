@@ -47,6 +47,7 @@ Vagrant-Docker-Host        - 192.168.0.3  : 22 -> 2223, 8080 -> 8081
 Vagrant-OpenSense-Firewall - 192.168.0.1  : 22 -> 2224, 443 -> 10443
 Vagrant-Postgres-Timescale - 192.168.0.5  : 22 -> 2225, 5432
 Vagrant-Nginx              - 192.168.0.2  : 22 -> 2226, 8080 -> 8082
+Vagrant-Win10-Official     - 192.168.0.9  : 22 -> 2229, 3389 -> 3390, 5985 -> 5986, 5985 -> 5986
 ```
 
 ## History
