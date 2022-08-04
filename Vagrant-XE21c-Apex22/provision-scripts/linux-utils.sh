@@ -21,5 +21,6 @@ yum install -y epel-release
 
 echo 'INSTALL UTILS: perf and diag utils'
 yum install -y glances iftop net-tools
+yum install postgresql-odbc.x86_64
 
 echo 'INSTALL UTILS: Complete'
