@@ -31,7 +31,9 @@ echo "BugFix: OL8 Disable sssd from starting to prevent 'Failed to get unit file
 #su -l oracle -c "$ORACLE_HOME/oui/bin/setProperty.sh -name OLD_JAVA_HOME -value $OLD_JAVA_HOME"
 #su -l oracle -c "$ORACLE_HOME/oui/bin/setProperty.sh -name JAVA_HOME -value '/usr/java/jdk-18.0.1.1'"
 JDK_INSTALL=`ls /vagrant/downloads/jdk-17*.rpm |tail -1`
-# yum -y --installroot= localinstall $JDK_INSTALL 
-yum -y  localinstall $JDK_INSTALL 
+if [ -f "$JDK_INSTALL" ]; then
+    # yum -y --installroot= localinstall $JDK_INSTALL 
+    yum -y  localinstall $JDK_INSTALL 
+fi
 
 echo 'INSTALL: Complete'
