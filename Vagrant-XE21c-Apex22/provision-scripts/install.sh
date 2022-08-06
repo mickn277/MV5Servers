@@ -21,9 +21,21 @@ yum update -y
 /usr/bin/ol_yum_configure.sh
 echo 'INSTALL: System updated'
 
-systemctl stop sssd
-systemctl disable sssd
-echo "BugFix: OL8 Disable sssd from starting to prevent 'Failed to get unit file state for sssd-sudo.socket:' error."
+# Disable sssd service if it's not needed.
+echo "BugFix: Disable sssd to prevent 'Failed to get unit file state for sssd-sudo.socket:' error."
+SERVICE_NAME="sssd.service"
+if [[ ! -z $(systemctl list-units --type=service | grep -F "${SERVICE_NAME}") ]]; then
+    echo "${SERVICE_NAME} installed"
+    systemctl stop ${SERVICE_NAME}
+    systemctl disable ${SERVICE_NAME}
+else
+    echo "${SERVICE_NAME} not installed, skipping"
+fi
+# yum install sssd sssd-client
+# systemctl enable sssd
+# authconfig --enablesssd --update [-enablesssdauth]
+# edit config: /etc/sssd/sssd.conf
+
 
 # ORDS Requires JDK 17, which wasn't installed in the default path
 # Change to Oracle JDK 18+, was JDK 11.
