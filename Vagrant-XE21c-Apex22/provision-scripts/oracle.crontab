@@ -8,4 +8,4 @@
 # * * * * *  CommandToBeExecuted
 #
 # DB offline backup weekly
-@weekly /home/oracle/bin/backup-OraXE18c-full-offline.sh
+0 0 * * 0 /home/oracle/bin/backup-OraXE-full-offline.sh
