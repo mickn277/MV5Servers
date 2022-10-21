@@ -53,7 +53,7 @@ if (not provisioned?) || provisioning?
     exit
   end
   unless !Dir.glob('./downloads/jdk*x64_bin.rpm').empty?
-    puts 'jdk rpm download ot found'
+    puts 'jdk rpm download not found'
     exit
   end
 else

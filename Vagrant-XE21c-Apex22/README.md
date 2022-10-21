@@ -15,10 +15,8 @@ A `clean` vagrant box that provisions Oracle Database XE 21c with ApEx (Oracle A
 [https://www.oracle.com/technetwork/developer-tools/apex/downloads/index.html](https://www.oracle.com/technetwork/developer-tools/apex/downloads/index.html)
 5. Download the latest Oracle Rest Data Services (ORDS) into this folder - first time only:
 [https://yum.oracle.com/repo/OracleLinux/OL8/oracle/software/x86_64/](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/software/x86_64/)
-<!--
-6. Download Oracle JDK 18 or higher:
-[https://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html](https://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html)
--->
+6. Download Oracle JDK 17:
+[Linux x64 RPM Package](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ## Getting started - Build the server with vagrant
 1. Run `vagrant up | tee vagrant.log`, this is helpful as the log goes past the 9999 line limit in powershell.

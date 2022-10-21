@@ -36,12 +36,7 @@ fi
 # authconfig --enablesssd --update [-enablesssdauth]
 # edit config: /etc/sssd/sssd.conf
 
-
 # ORDS Requires JDK 17, which wasn't installed in the default path
-# Change to Oracle JDK 18+, was JDK 11.
-#su -l oracle -c "OLD_JAVA_HOME=`$ORACLE_HOME/oui/bin/getProperty.sh JAVA_HOME`"
-#su -l oracle -c "$ORACLE_HOME/oui/bin/setProperty.sh -name OLD_JAVA_HOME -value $OLD_JAVA_HOME"
-#su -l oracle -c "$ORACLE_HOME/oui/bin/setProperty.sh -name JAVA_HOME -value '/usr/java/jdk-18.0.1.1'"
 JDK_INSTALL=`ls /vagrant/downloads/jdk-17*.rpm |tail -1`
 if [ -f "$JDK_INSTALL" ]; then
     # yum -y --installroot= localinstall $JDK_INSTALL 
