@@ -38,7 +38,18 @@ A `clean` vagrant box that provisions Oracle Database XE 21c with ApEx (Oracle A
 * Fixed by removing SSD Config on low spec laptop.
 * Tested working fine with all optimisations on AMD 3700x 32GB ram with M.2 flash drive.
 
-### Errors from Virtualbox on machine with only two phycal cores, but four threads.  
+### vagrant ERROR:  SSL verification error
+
+`vagrant ERROR:  SSL verification error at depth 3: unable to get local issuer certificate (20)`
+
+```powershell
+# Set SSL_CERT_FILE in Powershell to point to the vagrant cacert.pem file
+$env:SSL_CERT_FILE="C:\Apps\Vagrant\embedded\gems\gems\httpclient-2.8.3\lib\httpclient\cacert.pem"
+
+vagrant up | tee vagrant.log
+```
+
+### Errors from Virtualbox on machine with only two physical cores, but four threads.  
 * Changed v.cpus = 3 to 2 to fix.
 
 ## Connecting to Oracle
@@ -52,7 +63,7 @@ A `clean` vagrant box that provisions Oracle Database XE 21c with ApEx (Oracle A
 * CDB: `CDB$ROOT`
 * All passwords are auto-generated and printed on install
 
-### Apex Central http://localhost:8080/ords/
+### Apex http://localhost:8080/ords/
 * Workspace: `internal`
 * Username: `admin`
 * Password: `#PASSWORD#`
