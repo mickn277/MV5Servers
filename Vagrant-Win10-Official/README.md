@@ -13,7 +13,7 @@ This builds a Windows 10 Virtual Machine with a 90 day expiry.
 
 ### Download Requirements
 
-1. Clone this repository `git clone https://github.com/n2779510/MV5Servers`
+1. Clone this repository `git clone https://github.com/mickn277/MV5Servers`
 2. Change into the `Vagrant-Win10-Official` folder
 3. Download [Vagrant Box Image](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/) to some local path, e.g. `C:\tmp\05-Vagrant-Boxes`
 4. Add box to vagrant from that path: `vagrant box add file:///C:/tmp/05-Vagrant-Boxes/MSEdge%20-%20Win10.box --name Win10-official`
