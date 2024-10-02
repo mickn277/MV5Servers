@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# +--------- Minute            (0 - 59)
+# | +------- Hour              (0 - 23)
+# | | +----- Day of the Month  (1 - 31)
+# | | | +--- Month of the Year (1 - 12 or jan,feb...)
+# | | | | +- Day of the Week   (1 - 7, Monday = 1 or mon,tue...)
+# * * * * *  CommandToBeExecuted
+#
+# DB offline backup weekly
+0 0 * * 0 /home/oracle/bin/backup-OraXE-full-offline.sh
